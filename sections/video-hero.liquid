@@ -1,0 +1,86 @@
+<style>
+
+    .video-container {
+        width: 100vw;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .video-frame {
+        position: relative;
+        
+
+    }
+
+    .video-frame video{
+        width: 100vw;
+        position: relative;
+    }
+
+    .video-text {
+        position: absolute;
+        color: white;
+        z-index: 10;
+        top: 50%;
+        left: 50%;
+    }
+</style>
+
+
+
+<div class="video-container">
+    <div class="video-frame global-media-settings--full-width">
+        {{
+            section.settings.video
+            | video_tag:
+              image_size: '2500x',
+              autoplay: true,
+              loop: true,
+              controls: false,
+              muted: true
+          }}
+          <h1 class="video-text">Text</h1>
+    </div>
+</div>
+
+
+{% schema %}
+{
+    "name": "Video Hero",
+    "settings": [
+        {
+            "type": "video",
+            "id": "video",
+            "label": "A Shopify-hosted video"
+        },
+        {
+            "type": "url",
+            "id": "video_url",
+            "label": "Video URL"
+        },
+        {
+            "type": "text",
+            "id": "heading",
+            "label": "Heading"
+        },
+        {
+            "type": "textarea",
+            "id": "subheading",
+            "label": "Subheading"
+        },
+        {
+            "type": "color",
+            "id": "text_color",
+            "label": "Text Color",
+            "default": "#ffffff"
+        }
+    ],
+    "presets": [
+        {
+            "name": "Video Hero",
+            "category": "Custom"
+        }
+    ]
+}
+{% endschema %}

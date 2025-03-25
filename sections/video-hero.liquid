@@ -1,30 +1,139 @@
 <style>
 
     .video-container {
-        width: 100vw;
+        width: 100%;
         display: flex;
         justify-content: center;
         align-items: center;
+        overflow: hidden;
     }
 
     .video-frame {
+        width:100%;
         position: relative;
-        
-
+        max-height: 100dvh;
     }
 
     .video-frame video{
-        width: 100vw;
+        width: 100%;
         position: relative;
+        object-fit: contain;
     }
 
-    .video-text {
+    .video-text span {
         position: absolute;
         color: white;
         z-index: 10;
         top: 50%;
         left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 7rem;
+        font-weight: 700;
+        text-transform: all;
+        line-height: 1;
+        margin: 0;
+
     }
+    .video-text-main {
+        animation: glitch-blink 3s infinite;
+    }
+
+
+
+
+    .video-text span:first-child{
+        --i: 1;
+        position: absolute;
+        transform: translate(-50%, -50%);
+        clip-path: polygon(0 40%, 100% 40%, 100% 100%, 0% 100%);
+        animation: glitch-out 3s infinite;
+    }
+    .video-text span:last-child{
+        --i: -1;
+        position: absolute;
+        transform: translate(-50%, -50%);
+        clip-path: polygon(0 0, 100% 0, 100% 48%, 0 48%);  
+        animation: glitch-out 3s infinite;  
+    }
+
+
+      @keyframes glitch-blink {
+        /* Start synchronized with the other glitch */
+        0%, 70%, 100% {
+            opacity: 1;
+        }
+        70.01%, 99.9% {
+            opacity: 0;
+        }
+
+    }
+
+    
+    @keyframes glitch-out {
+        /* Initial stable state */
+        0%, 90% {
+          opacity: 1;
+          transform: translate(-50%, -50%);
+        }
+      
+        /* HORIZONTAL-ONLY GLITCHES */
+        90.01%, 91.00% {
+          opacity: 0.8;
+          transform: translate(calc(-50% + (15% * var(--i, 1))), -50%);
+        }
+        91.01%, 92.00% {
+          opacity: 0.7;
+          transform: translate(calc(-50% + (-25% * var(--i, 1))), -50%);
+        }
+      
+        /* VERTICAL-ONLY GLITCHES */
+        92.01%, 93.50% {
+          opacity: 0.6;
+          transform: translate(-50%, calc(-50% + (10% * var(--i, 1))));
+        }
+        93.51%, 95% {
+          opacity: 0.4;
+          transform: translate(-50%, calc(-50% + (-30% * var(--i, 1))));
+        }
+      
+        /* COMBINED X+Y GLITCHES */
+        95.01%, 96.5% {
+          opacity: 0.5;
+          transform: translate(
+            calc(-50% + (30% * var(--i, 1))),
+            calc(-50% + (-20% * var(--i, 1)))
+          );
+        }
+        96.51%, 97.50% {
+          opacity: 0.3;
+          transform: translate(
+            calc(-50% + (-10% * var(--i, 1))),
+            calc(-50% + (15% * var(--i, 1)))
+          );
+        }
+        97.51%, 98.00% {
+          opacity: 0.7;
+          transform: translate(
+            calc(-50% + (40% * var(--i, 1))),
+            calc(-50% + (5% * var(--i, 1)))
+          );
+        }
+        98.01%, 99.0% {
+          opacity: 0.5;
+          transform: translate(
+            calc(-50% + (-30% * var(--i, 1))),
+            calc(-50% + (50% * var(--i, 1)))
+          );
+        }
+      
+        /* Final reset */
+        99.01%, 100% {
+          opacity: 0;
+          transform: translate(-50%, -50%);
+        }
+      }
+    
+
 </style>
 
 
@@ -40,7 +149,8 @@
               controls: false,
               muted: true
           }}
-          <h1 class="video-text">Text</h1>
+          {% assign hero_text = section.settings.heading  %}
+          <h1 class="video-text"><span aria-hidden="true">{{ hero_text }}</span><span class="video-text-main">{{hero_text }}</span><span aria-hidden="true">{{hero_text }}</span></h1>
     </div>
 </div>
 

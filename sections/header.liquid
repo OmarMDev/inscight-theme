@@ -17,6 +17,28 @@
 {%- endif -%}
 
 <style>
+  {% if request.page_type == "index" and section.settings.enable_transparent-header %}
+    .header-wrapper{
+      background: transparent !important;
+    position: absolute !important;
+    width: 100% !important;
+    top: 0px;
+  }
+  {% endif %}
+
+  {% if template.name == "index" and section.settings.color-transparent  %}
+    @media only screen and (min-width: 600px) {
+        .list-menu__item, details[open]>.header__submenu {
+      color: {{ section.settings.color-transparent }} !important;
+          background: transparent;
+        }
+      
+    }
+      .header__icon.link,.header__active-menu-item,.disclosure__button,.header__heading-link .h2{
+      color: {{ section.settings.color-transparent }} !important;
+    }
+  {% endif %}
+
   header-drawer {
     justify-self: start;
     margin-left: -1.2rem;
@@ -647,6 +669,17 @@
       "unit": "px",
       "label": "t:sections.all.padding.padding_bottom",
       "default": 20
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_transparent-header",
+      "label": "Enable Transparent Header",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "color-transparent",
+      "label": "Transparent Color"
     }
   ],
   "blocks": [

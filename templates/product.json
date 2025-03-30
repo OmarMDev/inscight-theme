@@ -58,7 +58,9 @@
         "checkbox_upsell_pjq6iN": {
           "type": "checkbox_upsell",
           "settings": {
-            "checkbox_upsell_product": "shipping-protection"
+            "checkbox_upsell_product": "shipping-protection",
+            "checkbox_upsell_text": "Protected shipping",
+            "checkbox_upsell_default": true
           }
         }
       },

@@ -677,6 +677,55 @@
                   <input type="checkbox" id="{{ checkbox_id }}" {% if block.settings.checkbox_upsell_default %}checked {% endif %}>
                   <label for="{{ checkbox_id }}"> {{ block.settings.checkbox_upsell_text }}</label>
                 </div>
+                <style>
+                  .upsell-checkbox-container {
+                    display: flex;
+                    align-items: center;
+                    margin-top: 20px;
+                    margin-bottom: 20px;
+                  }
+                  
+                  .upsell-checkbox-container input[type="checkbox"] {
+                    appearance: none;
+                    width: 20px;
+                    height: 20px;
+                    border: 2px solid var(--color-border, #ccc);
+                    border-radius: 4px;
+                    position: relative;
+                    cursor: pointer;
+                    outline: none;
+                    background-color: transparent; /* Add this line */
+                  }
+                  
+                  .upsell-checkbox-container input[type="checkbox"]:checked {
+                    border-color: var(--color-foreground, #007bff);
+                    background-color: rgba(var(--color-foreground), .2);
+                  }
+                  
+                  .upsell-checkbox-container input[type="checkbox"]:checked::before {
+                    content: '';
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%) rotate(-45deg);
+                    width: 10px;
+                    height: 5px;
+                    border-left: 3px solid var(--color-button-text, white);
+                    border-bottom: 3px solid var(--color-button-text, white);
+                  }
+                  
+                  .upsell-checkbox-container label {
+                    margin-left: 10px;
+                    font-size: 16px;
+                    color: var(--color-foreground, #333);
+                    cursor: pointer;
+                  }
+                  
+                  .upsell-checkbox-container input[type="checkbox"]:hover {
+                    border-color: var(--color-button-hover, #0056b3);
+                  }
+
+                </style>
                 <script>
                   // This script is inline. It could be moved to a separate .js file in the assets folder.
                   document.addEventListener('DOMContentLoaded', function() {

@@ -9,7 +9,48 @@
   "market": [],
   "order": [],
   "page": [],
-  "product": [],
+  "product": [
+    {
+      "key": "color-pattern",
+      "namespace": "shopify",
+      "name": "Color",
+      "description": "Defines the primary color or pattern, such as blue or striped",
+      "type": {
+        "name": "list.metaobject_reference",
+        "category": "REFERENCE"
+      }
+    },
+    {
+      "key": "connectivity-technology",
+      "namespace": "shopify",
+      "name": "Connectivity technology",
+      "description": "Defines the method of data transfer in a product, e.g. Bluetooth, USB",
+      "type": {
+        "name": "list.metaobject_reference",
+        "category": "REFERENCE"
+      }
+    },
+    {
+      "key": "audio-purpose",
+      "namespace": "shopify",
+      "name": "Audio purpose",
+      "description": "Specifies the intended use or location for audio products, such as car audio or home cinema",
+      "type": {
+        "name": "list.metaobject_reference",
+        "category": "REFERENCE"
+      }
+    },
+    {
+      "key": "speaker-design",
+      "namespace": "shopify",
+      "name": "Speaker design",
+      "description": "Defines the physical and functional design of speakers, such as subwoofer or tower",
+      "type": {
+        "name": "list.metaobject_reference",
+        "category": "REFERENCE"
+      }
+    }
+  ],
   "variant": [],
   "shop": []
 }

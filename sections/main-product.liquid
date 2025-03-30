@@ -464,12 +464,23 @@
               {%- when 'variant_picker' -%}
                 {% render 'product-variant-picker', product: product, block: block, product_form_id: product_form_id %}
               {%- when 'buy_buttons' -%}
+                {%- liquid
+                  assign product_upsell_checkbox = false
+                  for block in section.blocks
+                  if block.type == 'checkbox_upsell'
+                  assign product_upsell_checkbox = true
+                  assign checkbox_upsell_variant_id = block.settings.checkbox_upsell_product.first_available_variant.id
+                  endif
+                  endfor
+                -%}
                 {%- render 'buy-buttons',
                   block: block,
                   product: product,
                   product_form_id: product_form_id,
                   section_id: section.id,
-                  show_pickup_availability: true
+                  show_pickup_availability: true,
+                  product_upsell_checkbox: product_upsell_checkbox,
+                  checkbox_upsell_variant_id: checkbox_upsell_variant_id
                 -%}
               {%- when 'rating' -%}
                 {%- if product.metafields.reviews.rating.value != blank -%}
@@ -660,6 +671,24 @@
                 </product-recommendations>
               {%- when 'icon-with-text' -%}
                 {% render 'icon-with-text', block: block %}
+              {%- when 'checkbox_upsell' -%}
+                {% assign checkbox_id = 'upsell-checkbox-' | append: block.id %}
+                <div class="upsell-checkbox-container">
+                  <input type="checkbox" id="{{ checkbox_id }}" {% if block.settings.checkbox_upsell_default %}checked {% endif %}>
+                  <label for="{{ checkbox_id }}"> {{ block.settings.checkbox_upsell_text }}</label>
+                </div>
+                <script>
+                  // This script is inline. It could be moved to a separate .js file in the assets folder.
+                  document.addEventListener('DOMContentLoaded', function() {
+                    const checkbox = document.getElementById('{{ checkbox_id }}');
+                    const productForm = document.getElementById('{{ product_form_id }}');
+                    productForm.dataset.upsellChecked = checkbox.checked;
+                
+                    checkbox.addEventListener('change', function() {
+                      productForm.dataset.upsellChecked = checkbox.checked;
+                    });
+                  });
+                </script>
             {%- endcase -%}
           {%- endfor -%}
           <a href="{{ product.url }}" class="link product__view-details animate-arrow">
@@ -2070,6 +2099,29 @@
           "default": "t:sections.main-product.blocks.icon_with_text.settings.heading_3.default",
           "label": "t:sections.main-product.blocks.icon_with_text.settings.heading_3.label",
           "info": "t:sections.main-product.blocks.icon_with_text.settings.heading.info"
+        }
+      ]
+    },
+    { 
+      "type" : "checkbox_upsell",
+      "name" : "Checkbox Upsell", 
+      "limit": 1,
+      "settings": [
+        {
+          "type": "product",
+          "id": "checkbox_upsell_product",
+          "label": "Product"
+        },
+        {
+          "type": "text",
+          "id": "checkbox_upsell_text",
+          "label": "Checkbox Upsell Label"
+        },
+        {
+          "type": "checkbox",
+          "id": "checkbox_upsell_default",
+          "default": true,
+          "label": "Checked by default"
         }
       ]
     }

@@ -28,6 +28,8 @@
       class="product-form"
       data-hide-errors="{{ gift_card_recipient_feature_active }}"
       data-section-id="{{ section.id }}"
+      {% if product_upsell_checkbox %} data-checkbox-upsell-variant-id ="{{checkbox_upsell_variant_id}}"{% endif %}
+
     >
       <div class="product-form__error-message-wrapper" role="alert" hidden>
         <span class="svg-wrapper">

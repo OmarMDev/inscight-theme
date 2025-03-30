@@ -54,6 +54,12 @@
           "settings": {
             "share_label": "Share"
           }
+        },
+        "checkbox_upsell_pjq6iN": {
+          "type": "checkbox_upsell",
+          "settings": {
+            "checkbox_upsell_product": "shipping-protection"
+          }
         }
       },
       "block_order": [
@@ -64,7 +70,8 @@
         "quantity_selector",
         "buy_buttons",
         "description",
-        "share"
+        "share",
+        "checkbox_upsell_pjq6iN"
       ],
       "settings": {
         "enable_sticky_info": true,

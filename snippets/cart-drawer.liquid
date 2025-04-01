@@ -8,6 +8,24 @@
 {{ 'quantity-popover.css' | asset_url | stylesheet_tag }}
 {{ 'component-card.css' | asset_url | stylesheet_tag }}
 
+
+{% assign enable_conditional_atc_item = settings.enable_conditional_atc_item %}
+{% assign atc_item_condition_type = settings.atc_item_condition_type %}
+{% assign atc_item_metaobject_handle = settings.atc_item_metaobject_handle %}
+
+{% assign condition_entry = null %}
+{% if atc_item_metaobject_handle != blank %}
+  {% assign condition_entry = shop.metaobjects.conditional_atc_item[atc_item_metaobject_handle] %}
+{% endif %}
+
+{% if condition_entry %}
+  {% assign atc_item_product_list_ids = condition_entry.product_list.value | map: 'id' | join: ',' | default: '' %}
+  {% assign atc_item_use_as_exclusion = condition_entry.use_as_exclusion %}
+  {% assign atc_item_variant_to_add_ids = condition_entry.variant_to_add.value | map: 'id' | join: ',' | default: '' %}
+  {% assign atc_item_threshold_value = condition_entry.threshold_value.value | default: 0 %}
+{% endif %}
+
+
 <script src="{{ 'cart.js' | asset_url }}" defer="defer"></script>
 <script src="{{ 'quantity-popover.js' | asset_url }}" defer="defer"></script>
 
@@ -78,6 +96,14 @@
         {% if cart == empty %}
           class=" is-empty"
         {% endif %}
+        data-enable-conditional-atc-item="{{ enable_conditional_atc_item }}"
+        data-atc-item-condition-type="{{ atc_item_condition_type }}"
+        data-atc-item-metaobject-handle="{{ atc_item_metaobject_handle }}"
+        data-atc-item-product-list="{{ atc_item_product_list_ids | strip }}"
+        data-atc-item-use-as-exclusion="{{ atc_item_use_as_exclusion }}"
+        data-atc-item-variant-to-add="{{ atc_item_variant_to_add_ids | strip }}"
+        data-atc-item-threshold-value="{{ atc_item_threshold_value }}"
+      
       >
         <form
           action="{{ routes.cart_url }}"
@@ -330,6 +356,8 @@
                               <cart-remove-button
                                 id="CartDrawer-Remove-{{ item.index | plus: 1 }}"
                                 data-index="{{ item.index | plus: 1 }}"
+                                data-variant-id="{{ item.variant.id }}"
+
                               >
                                 <button
                                   type="button"

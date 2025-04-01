@@ -1451,5 +1451,33 @@
         "default": "scheme-1"
       }
     ]
+  },
+  {
+    "name": "Conditional ATC Item Settings",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "enable_conditional_atc_item",
+        "default": false,
+        "label": "Enable conditional add/remove?"
+      },
+      {
+        "type": "select",
+        "id": "atc_item_condition_type",
+        "label": "Condition Type",
+        "options": [
+          { "value": "cart_total", "label": "Cart total" },
+          { "value": "cart_subtotal", "label": "Cart subtotal" },
+          { "value": "cart_item_count", "label": "Cart item count" }
+        ],
+        "default": "cart_total"
+      },
+      {
+        "type": "text",
+        "id": "atc_item_metaobject_handle",
+        "label": "Metaobject entry handle for condition settings",
+        "default": "cart-gift-item"
+      }
+    ]
   }
 ]

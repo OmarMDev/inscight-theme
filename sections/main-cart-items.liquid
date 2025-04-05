@@ -49,7 +49,6 @@
   data-atc-item-use-as-exclusion="{{ atc_item_use_as_exclusion }}"
   data-atc-item-variant-to-add="{{ atc_item_variant_to_add_ids | strip }}"
   data-atc-item-threshold-value="{{ atc_item_threshold_value }}"
-
 >
   <div class="page-width">
     <div class="title-wrapper-with-link">
@@ -58,7 +57,10 @@
         {{- 'general.continue_shopping' | t -}}
       </a>
     </div>
-
+    {%- unless settings.cart_type == 'drawer' -%}
+      {% render 'cart-progress-bar-custom' %}
+    {%- endunless -%}
+    
     <div class="cart__warnings">
       <h1 class="cart__empty-text">{{ 'sections.cart.empty' | t }}</h1>
       <a href="{{ routes.all_products_collection_url }}" class="button">

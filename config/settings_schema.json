@@ -1479,5 +1479,226 @@
         "default": "cart-gift-item"
       }
     ]
+  },
+  {
+    "name": "Cart Progress Bar",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "enable_cart_progress_bar",
+        "label": "Enable Cart Progress Bar",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "show_progress_bar_icons",
+        "label": "Show progress bar icons",
+        "default": false
+      },
+      {
+        "type": "select",
+        "id": "progress_bar_basis",
+        "label": "Progress Bar Basis",
+        "options": [
+          {
+            "label": "Cart Price (total or subtotal)",
+            "value": "item_price"
+          },
+          {
+            "label": "Cart Item Count",
+            "value": "item_count"
+          }
+        ],
+        "default": "item_price"
+      },
+      {
+        "type": "text",
+        "id": "excluded_product_ids",
+        "label": "Excluded product IDs (comma-separated)",
+        "placeholder": "123456789,987654321",
+        "info": "List product IDs to exclude from item count, separated by commas."
+      },
+      {
+        "type": "header",
+        "content": "Goal 1"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_goal_1",
+        "label": "Enable Goal 1",
+        "default": true
+      },
+      {
+        "type": "select",
+        "id": "goal_1_basis",
+        "label": "Goal 1 Basis (for price goal only)",
+        "options": [
+          { "label": "Total", "value": "total" },
+          { "label": "Subtotal", "value": "subtotal" }
+        ],
+        "default": "total"
+      },
+      {
+        "type": "text",
+        "id": "goal_1_pre_goal_message",
+        "label": "Goal 1 Pre-Goal Message",
+        "default": "You're only [remaining_for_goal] away from <strong>Goal 1</strong>",
+        "info": "Use [remaining_for_goal] to insert the dynamic remaining amount."
+      },
+      {
+        "type": "text",
+        "id": "goal_1_post_goal_message",
+        "label": "Goal 1 Post-Goal Message",
+        "default": "🎉 Congrats! You've unlocked <strong>Goal 1</strong>",
+        "info": "Message displayed after reaching Goal 1."
+      },
+      {
+        "type": "text",
+        "id": "goal_1_description",
+        "label": "Goal 1 Description",
+        "default": "Free Shipping",
+        "info": "Text displayed beneath Goal 1 icon."
+      },
+      {
+        "type": "image_picker",
+        "id": "goal_1_icon",
+        "label": "Goal 1 Icon"
+      },
+      {
+        "type": "image_picker",
+        "id": "goal_1_icon_reached",
+        "label": "Goal 1 Reached Icon"
+      },
+      {
+        "type": "header",
+        "content": "Goal 2"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_goal_2",
+        "label": "Enable Goal 2",
+        "default": false
+      },
+      {
+        "type": "select",
+        "id": "goal_2_basis",
+        "label": "Goal 2 Basis (for price goal only)",
+        "options": [
+          { "label": "Total", "value": "total" },
+          { "label": "Subtotal", "value": "subtotal" }
+        ],
+        "default": "total"
+      },
+      {
+        "type": "text",
+        "id": "goal_2_pre_goal_message",
+        "label": "Goal 2 Pre-Goal Message",
+        "default": "You're only [remaining_for_goal] away from a <strong>Goal 2</strong>",
+        "info": "Use [remaining_for_goal] to insert the dynamic remaining amount."
+      },
+      {
+        "type": "text",
+        "id": "goal_2_post_goal_message",
+        "label": "Goal 2 Post-Goal Message",
+        "default": "You've unlocked your <strong>Goal 2</strong>",
+        "info": "Message displayed after reaching Goal 2."
+      },
+      {
+        "type": "text",
+        "id": "goal_2_description",
+        "label": "Goal 2 Description",
+        "default": "Free Gift",
+        "info": "Text displayed beneath Goal 2 icon."
+      },
+      {
+        "type": "image_picker",
+        "id": "goal_2_icon",
+        "label": "Goal 2 Icon"
+      },
+      {
+        "type": "image_picker",
+        "id": "goal_2_icon_reached",
+        "label": "Goal 2 Reached Icon"
+      },
+      {
+        "type": "header",
+        "content": "Goal 3"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_goal_3",
+        "label": "Enable Goal 3",
+        "default": false
+      },
+      {
+        "type": "select",
+        "id": "goal_3_basis",
+        "label": "Goal 3 Basis (for price goal only)",
+        "options": [
+          { "label": "Total", "value": "total" },
+          { "label": "Subtotal", "value": "subtotal" }
+        ],
+        "default": "total"
+      },
+      {
+        "type": "text",
+        "id": "goal_3_pre_goal_message",
+        "label": "Goal 3 Pre-Goal Message",
+        "default": "You're only [remaining_for_goal] away from <strong>Goal 3</strong>",
+        "info": "Use [remaining_for_goal] to insert the dynamic remaining amount."
+      },
+      {
+        "type": "text",
+        "id": "goal_3_post_goal_message",
+        "label": "Goal 3 Post-Goal Message",
+        "default": "Goal 3 unlocked!",
+        "info": "Message displayed after reaching Goal 3."
+      },
+      {
+        "type": "text",
+        "id": "goal_3_description",
+        "label": "Goal 3 Description",
+        "default": "Goal 3",
+        "info": "Text displayed beneath Goal 3 icon."
+      },
+      {
+        "type": "image_picker",
+        "id": "goal_3_icon",
+        "label": "Goal 3 Icon"
+      },
+      {
+        "type": "image_picker",
+        "id": "goal_3_icon_reached",
+        "label": "Goal 3 Reached Icon"
+      },
+      {
+        "type": "header",
+        "content": "Formatting Options"
+      },
+      {
+        "type": "color",
+        "id": "cart_progress_bar_color",
+        "label": "Progress Bar Color",
+        "default": "#d53600"
+      },
+      {
+        "type": "color",
+        "id": "cart_progress_bar_full_color",
+        "label": "Progress Bar Full Color",
+        "default": "#d53600"
+      },
+      {
+        "type": "color",
+        "id": "cart_progress_bar_background_color",
+        "label": "Progress Bar Background Color",
+        "default": "#eee"
+      },
+      {
+        "type": "color",
+        "id": "cart_progress_bar_text_color",
+        "label": "Progress Bar Text Color",
+        "default": "#333"
+      }
+    ]
   }
 ]

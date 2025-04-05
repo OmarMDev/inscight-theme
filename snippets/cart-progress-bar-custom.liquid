@@ -1,0 +1,413 @@
+{% if cart != empty and settings.enable_cart_progress_bar %}
+    {% if localization.market.metafields.custom.cart_progress_goal_threshold_1 != nil or localization.market.metafields.custom.cart_progress_goal_threshold_2 != nil or localization.market.metafields.custom.cart_progress_goal_threshold_3 != nil %}
+  
+      {% assign progress_bar_basis = settings.progress_bar_basis %}
+      {% assign raw_ids = settings.excluded_product_ids | default: '' %}
+      {% assign raw_ids = raw_ids | replace: ' ', '' %}
+      {% assign excluded_product_ids = raw_ids | split: ',' %}
+  
+      {% assign item_count_metric = 0 %}
+      {% assign excluded_subtotal_metric = 0 %}
+      {% assign excluded_total_metric = 0 %}
+  
+      {% for item in cart.items %}
+        {% assign product_id_num = item.product.id | split: '/' | last %}
+        {% unless excluded_product_ids contains product_id_num %}
+          {% assign item_count_metric = item_count_metric | plus: item.quantity %}
+          {% assign excluded_subtotal_metric = excluded_subtotal_metric | plus: item.original_line_price %}
+          {% assign excluded_total_metric = excluded_total_metric | plus: item.line_price %}
+        {% endunless %}
+      {% endfor %}
+  
+      {% assign thresholds = '' %}
+      {% assign pre_goal_messages = '' %}
+      {% assign post_goal_messages = '' %}
+      {% assign descriptions = '' %}
+      {% assign goal_bases = '' %}
+  
+      {% assign previous_threshold = 0 %}
+      {% for i in (1..3) %}
+        {% assign enable_goal_key = 'enable_goal_' | append: i %}
+        {% assign enable_goal = settings[enable_goal_key] %}
+        {% assign metafield_name = 'cart_progress_goal_threshold_' | append: i %}
+        {% assign current_metafield = localization.market.metafields.custom[metafield_name] %}
+  
+        {% assign basis_key = 'goal_' | append: i | append: '_basis' %}
+        {% assign goal_basis = settings[basis_key] | default: 'total' %}
+  
+        {% if enable_goal and current_metafield != blank %}
+          {% if progress_bar_basis == 'item_count' %}
+            {% assign potential_threshold = current_metafield | round %}
+          {% else %}
+            {% assign potential_threshold = current_metafield | times: 100 | round %}
+          {% endif %}
+  
+          {% if i == 1 or potential_threshold > previous_threshold %}
+            {% assign threshold = potential_threshold %}
+            {% assign previous_threshold = threshold %}
+  
+            {% assign pre_goal_message_key = 'goal_' | append: i | append: '_pre_goal_message' %}
+            {% assign pre_goal_message = settings[pre_goal_message_key] %}
+            {% assign post_goal_message_key = 'goal_' | append: i | append: '_post_goal_message' %}
+            {% assign post_goal_message = settings[post_goal_message_key] %}
+            {% assign description_key = 'goal_' | append: i | append: '_description' %}
+            {% assign description = settings[description_key] %}
+  
+            {% if thresholds != '' %}
+              {% assign thresholds = thresholds | append: ',' %}
+              {% assign pre_goal_messages = pre_goal_messages | append: '||' %}
+              {% assign post_goal_messages = post_goal_messages | append: '||' %}
+              {% assign descriptions = descriptions | append: '||' %}
+              {% assign goal_bases = goal_bases | append: ',' %}
+            {% endif %}
+  
+            {% assign thresholds = thresholds | append: threshold %}
+            {% assign pre_goal_messages = pre_goal_messages | append: pre_goal_message %}
+            {% assign post_goal_messages = post_goal_messages | append: post_goal_message %}
+            {% assign descriptions = descriptions | append: description %}
+            {% assign goal_bases = goal_bases | append: goal_basis %}
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+  
+      {% assign thresholds = thresholds | split: ',' %}
+      {% assign pre_goal_messages = pre_goal_messages | split: '||' %}
+      {% assign post_goal_messages = post_goal_messages | split: '||' %}
+      {% assign descriptions = descriptions | split: '||' %}
+      {% assign goal_bases = goal_bases | split: ',' %}
+  
+      {% if thresholds.size > 0 %}
+        {% assign total_threshold = thresholds.last | plus: 0 %}
+      {% else %}
+        {% assign total_threshold = 0 %}
+      {% endif %}
+  
+      {% assign number_of_segments = thresholds.size %}
+  
+      {% if number_of_segments > 0 %}
+        {% assign first_basis = goal_bases.first %}
+        {% if progress_bar_basis == 'item_count' %}
+          {% assign display_metric = item_count_metric %}
+        {% else %}
+          {% if first_basis == 'subtotal' %}
+            {% assign display_metric = excluded_subtotal_metric %}
+          {% else %}
+            {% assign display_metric = excluded_total_metric %}
+          {% endif %}
+        {% endif %}
+  
+        {% if total_threshold > 0 %}
+          {% assign progress_fraction = display_metric | times: 100 | divided_by: total_threshold %}
+        {% else %}
+          {% assign progress_fraction = 0 %}
+        {% endif %}
+      {% else %}
+        {% assign progress_fraction = 0 %}
+      {% endif %}
+  
+      {% if progress_fraction > 100 %}
+        {% assign progress_percentage = 100 %}
+      {% else %}
+        {% assign progress_percentage = progress_fraction %}
+      {% endif %}
+  
+      {% assign next_goal_index = -1 %}
+      {% assign last_threshold_index = thresholds.size | minus: 1 %}
+      {% for i in (0..last_threshold_index) %}
+        {% assign this_threshold = thresholds[i] | plus:0 %}
+        {% assign this_basis = goal_bases[i] %}
+        {% if progress_bar_basis == 'item_count' %}
+          {% assign current_metric_for_goal = item_count_metric %}
+        {% else %}
+          {% if this_basis == 'subtotal' %}
+            {% assign current_metric_for_goal = excluded_subtotal_metric %}
+          {% else %}
+            {% assign current_metric_for_goal = excluded_total_metric %}
+          {% endif %}
+        {% endif %}
+  
+        {% assign diff = current_metric_for_goal | minus: this_threshold %}
+        {% if diff < 0 %}
+          {% assign next_goal_index = i %}
+          {% break %}
+        {% endif %}
+      {% endfor %}
+  
+      {% if next_goal_index == -1 %}
+        {% assign message = post_goal_messages.last %}
+      {% else %}
+        {% assign this_basis = goal_bases[next_goal_index] %}
+        {% if progress_bar_basis == 'item_count' %}
+          {% assign current_metric_for_goal = item_count_metric %}
+        {% else %}
+          {% if this_basis == 'subtotal' %}
+            {% assign current_metric_for_goal = excluded_subtotal_metric %}
+          {% else %}
+            {% assign current_metric_for_goal = excluded_total_metric %}
+          {% endif %}
+        {% endif %}
+  
+        {% assign threshold = thresholds[next_goal_index] | plus:0 %}
+        {% assign remaining_for_goal = threshold | minus: current_metric_for_goal %}
+        {% if remaining_for_goal < 0 %}
+          {% assign remaining_for_goal = 0 %}
+        {% endif %}
+  
+        {% assign pre_goal_message_template = pre_goal_messages[next_goal_index] %}
+  
+        {% if progress_bar_basis == 'item_count' %}
+          {% assign remaining_for_goal_formatted = remaining_for_goal %}
+        {% else %}
+          {% if settings.currency_code_enabled %}
+            {% assign remaining_for_goal_formatted = remaining_for_goal | money_with_currency %}
+          {% else %}
+            {% assign remaining_for_goal_formatted = remaining_for_goal | money %}
+          {% endif %}
+        {% endif %}
+  
+        {% assign message = pre_goal_message_template | replace: '[remaining_for_goal]', remaining_for_goal_formatted %}
+      {% endif %}
+  
+      {% assign goal_positions = '' %}
+      {% if number_of_segments > 0 %}
+        {% assign segment_width = 100 | divided_by: number_of_segments %}
+        {% for idx in (1..number_of_segments) %}
+          {% assign pos = idx | times: segment_width %}
+          {% if goal_positions != '' %}
+            {% assign goal_positions = goal_positions | append: ',' %}
+          {% endif %}
+          {% assign goal_positions = goal_positions | append: pos %}
+        {% endfor %}
+      {% endif %}
+  
+      <div id="cart-progress-wrapper"
+        class="{% if progress_percentage == 100 %}full{% else %}not-full{% endif %}"
+        data-thresholds="{{ thresholds | join: ',' }}"
+        data-pre-goal-messages="{{ pre_goal_messages | join: '||' | escape }}"
+        data-post-goal-messages="{{ post_goal_messages | join: '||' | escape }}"
+        data-goal-positions="{{ goal_positions }}"
+        data-currency-format="{% if settings.currency_code_enabled %}{{ shop.money_with_currency_format | escape }}{% else %}{{ shop.money_format | escape }}{% endif %}"
+        data-progress-bar-basis="{{ progress_bar_basis }}"
+        data-excluded-product-ids="{{ settings.excluded_product_ids }}"
+        data-goal-bases="{{ goal_bases | join: ',' }}"
+      >
+        <div class="cart-progress-bar-and-icons-wrapper">
+          {% if number_of_segments > 0 %}
+            {% assign last_segment_index = number_of_segments | minus: 1 %}
+            <div class="cart-segments-container">
+              {% assign start_value = 0 %}
+              {% for i in (0..last_segment_index) %}
+                {% assign threshold_value = thresholds[i] | plus:0 %}
+                {% assign segment_length = threshold_value | minus: start_value %}
+  
+                {% assign this_basis = goal_bases[i] %}
+                {% if progress_bar_basis == 'item_count' %}
+                  {% assign segment_metric = item_count_metric %}
+                {% else %}
+                  {% if this_basis == 'subtotal' %}
+                    {% assign segment_metric = excluded_subtotal_metric %}
+                  {% else %}
+                    {% assign segment_metric = excluded_total_metric %}
+                  {% endif %}
+                {% endif %}
+  
+                {% if segment_metric >= threshold_value %}
+                  {% assign fill_percentage = 100 %}
+                {% elsif segment_metric <= start_value %}
+                  {% assign fill_percentage = 0 %}
+                {% else %}
+                  {% assign filled = segment_metric | minus: start_value %}
+                  {% assign fill_percentage = filled | times:100 | divided_by:segment_length %}
+                {% endif %}
+  
+                <div class="cart-segment" style="width: {{ segment_width }}%;">
+                  <div class="cart-segment-fill" style="display:block; width: {{ fill_percentage }}%;"></div>
+                </div>
+                {% assign start_value = threshold_value %}
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="cart-segments-container">
+              <div class="cart-segment" style="width:100%;">
+                <div class="cart-segment-fill" style="display:block; width:{{ progress_percentage }}%;"></div>
+              </div>
+            </div>
+          {% endif %}
+  
+          {% if settings.show_progress_bar_icons and number_of_segments > 0 %}
+            {% assign goal_positions_array = goal_positions | split: ',' %}
+            {% assign last_goal_position_index = goal_positions_array.size | minus:1 %}
+            <div class="goal-icons-container">
+              {% for index in (0..last_goal_position_index) %}
+                {% assign goal_position = goal_positions_array[index] %}
+                {% assign threshold = thresholds[index] | plus: 0 %}
+                {% assign this_basis = goal_bases[index] %}
+  
+                {% if progress_bar_basis == 'item_count' %}
+                  {% assign icon_metric = item_count_metric %}
+                {% else %}
+                  {% if this_basis == 'subtotal' %}
+                    {% assign icon_metric = excluded_subtotal_metric %}
+                  {% else %}
+                    {% assign icon_metric = excluded_total_metric %}
+                  {% endif %}
+                {% endif %}
+  
+                {% assign cart_total_diff = icon_metric | minus: threshold %}
+                {% assign current_index = index | plus: 1 %}
+                {% assign icon_key = 'goal_' | append: current_index | append: '_icon' %}
+                {% assign icon_reached_key = 'goal_' | append: current_index | append: '_icon_reached' %}
+                {% assign image_icon = settings[icon_key] %}
+                {% assign image_icon_reached = settings[icon_reached_key] %}
+                {% assign image_alt_text = 'Goal ' | append: current_index %}
+                {% assign image_alt_text_reached = 'Goal ' | append: current_index | append: ' Reached' %}
+  
+                {% if image_icon != blank %}
+                  {% assign image_icon_url = image_icon | image_url: width: 50 %}
+                  {% unless preload_images contains image_icon_url %}
+                    {% if preload_images != '' %}
+                      {% assign preload_images = preload_images | append: ',' %}
+                    {% endif %}
+                    {% assign preload_images = preload_images | append: image_icon_url %}
+                  {% endunless %}
+                {% endif %}
+                {% if image_icon_reached != blank %}
+                  {% assign image_icon_reached_url = image_icon_reached | image_url: width: 50 %}
+                  {% unless preload_images contains image_icon_reached_url %}
+                    {% if preload_images != '' %}
+                      {% assign preload_images = preload_images | append: ',' %}
+                    {% endif %}
+                    {% assign preload_images = preload_images | append: image_icon_reached_url %}
+                  {% endunless %}
+                {% endif %}
+  
+                <div class="goal-icon" style="left: {{ goal_position }}%;"
+                  {% if image_icon != blank %}data-regular-icon="{{ image_icon_url }}"{% endif %}
+                  {% if image_icon_reached != blank %}data-reached-icon="{{ image_icon_reached_url }}"{% endif %}
+                  data-index="{{ current_index }}"
+                >
+                  {% if image_icon != blank or image_icon_reached != blank %}
+                    {% if cart_total_diff < 0 %}
+                      {% if image_icon != blank %}
+                        {{ image_icon_url | image_tag: preload: true, alt: image_alt_text }}
+                      {% endif %}
+                    {% else %}
+                      {% if image_icon_reached != blank %}
+                        {{ image_icon_reached_url | image_tag: preload: true, alt: image_alt_text_reached }}
+                      {% elsif image_icon != blank %}
+                        {{ image_icon_url | image_tag: preload: true, alt: image_alt_text }}
+                      {% endif %}
+                    {% endif %}
+                  {% endif %}
+                  {% if descriptions[index] != blank %}
+                    <div class="goal-description">{{ descriptions[index] }}</div>
+                  {% endif %}
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+        <div class="goal-message">
+          {{ message }}
+        </div>
+      </div>
+  
+      {% assign preload_images_array = preload_images | split: ',' %}
+      <div style="display:none;">
+        {% for preload_image in preload_images_array %}
+          <img src="{{ preload_image }}" alt="">
+        {% endfor %}
+      </div>
+  
+      <style>
+        .cart-segments-container {
+          display: flex;
+          width: 100%;
+          background-color: {{ settings.cart_progress_bar_background_color }};
+          border-radius: 10px;
+          overflow: hidden;
+          position: relative;
+          height: 12px;
+          margin: 10px auto;
+        }
+        .cart-segment {
+          position: relative;
+          height: 100%;
+          background-color: {{ settings.cart_progress_bar_background_color }};
+          border-right: 1px solid #ddd;
+          transition: width 0.2s ease;
+        }
+        .cart-segment:last-child {
+          border-right: none;
+        }
+        .cart-segment-fill {
+          height: 100%;
+          background-color: {{ settings.cart_progress_bar_color }};
+          transition: width 0.2s ease;
+
+        }
+        #cart-progress-bar {
+          display: none; 
+        }
+        #cart-progress-wrapper.full .cart-segment-fill {
+          background-color: {{ settings.cart_progress_bar_full_color }};
+        }
+        {% if settings.show_progress_bar_icons %}
+        .cart-progress-bar-and-icons-wrapper {
+          margin-right: 20px;
+        }
+        .goal-icons-container {
+          position: relative;
+          margin-top: -30px;
+          height: 60px;
+          pointer-events: none;
+        }
+        .goal-icon {
+          position: absolute;
+          top: 0;
+          transform: translateX(-50%);
+          text-align: center;
+          margin: 0;
+          padding: 0;
+          line-height: 1;
+          width: 70px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          transition: all 0.2s ease;
+
+        }
+        .goal-icon img {
+          width: 30px;
+          height: 30px;
+          margin: 0 auto;
+          display: block;
+          transition: transform 0.2s ease, opacity 0.2s ease;
+
+        }
+        .goal-description {
+          font-size: 12px;
+          color: {{ settings.cart_progress_bar_text_color }};
+          margin-top: 4px;
+          text-align: center;
+          width: 100%;
+          overflow-wrap: break-word;
+          word-wrap: break-word;
+          hyphens: auto;
+          transition: transform 0.2s ease, opacity 0.2s ease;
+
+        }
+        {% endif %}
+        .goal-message {
+          text-align: center;
+          margin: 10px auto;
+          font-size: 1em;
+          color: {{ settings.cart_progress_bar_text_color }};
+          transition: color 0.2s ease;
+
+        }
+      </style>
+    {% endif %}
+  {% endif %}
+  
+  

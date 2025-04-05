@@ -276,6 +276,8 @@ class CartItems extends HTMLElement {
 
         CartPerformance.measureFromEvent(`${eventTarget}:user-action`, event);
 
+        this.updateProgressBar({ items: parsedState.items });
+
         publish(PUB_SUB_EVENTS.cartUpdate, { source: "cart-items", cartData: parsedState, variantId: variantId });
 
         const { enableConditionalAtcItem } = this.getConditionalAtcItemSettings();
@@ -292,6 +294,199 @@ class CartItems extends HTMLElement {
       .finally(() => {
         this.disableLoading(line);
       });
+  }
+
+  updateProgressBar({ items }) {
+    const progressWrapper = document.getElementById("cart-progress-wrapper");
+    if (!progressWrapper) return;
+
+    const progressBarBasis = progressWrapper.dataset.progressBarBasis;
+    const excludedProducts = progressWrapper.dataset.excludedProductIds
+      ? progressWrapper.dataset.excludedProductIds
+          .split(",")
+          .map((id) => id.trim())
+          .filter(Boolean)
+      : [];
+
+    const currencyFormat = progressWrapper.dataset.currencyFormat;
+    const thresholds = progressWrapper.dataset.thresholds.split(",").map(Number);
+    const preGoalMessages = progressWrapper.dataset.preGoalMessages.split("||");
+    const postGoalMessages = progressWrapper.dataset.postGoalMessages.split("||");
+    const goalPositions = progressWrapper.dataset.goalPositions ? progressWrapper.dataset.goalPositions.split(",").map(Number) : [];
+    const goalBases = progressWrapper.dataset.goalBases ? progressWrapper.dataset.goalBases.split(",") : [];
+
+    let itemCountMetric = 0;
+    let excludedSubtotalMetric = 0;
+    let excludedTotalMetric = 0;
+
+    for (const item of items) {
+      if (!excludedProducts.includes(item.product_id.toString())) {
+        itemCountMetric += item.quantity;
+        excludedSubtotalMetric += item.original_line_price;
+        excludedTotalMetric += item.line_price;
+      }
+    }
+
+    let cartMetric;
+    if (progressBarBasis === "item_count") {
+      cartMetric = itemCountMetric;
+    } else {
+      cartMetric = excludedTotalMetric;
+    }
+
+    const totalThreshold = thresholds.length > 0 ? thresholds[thresholds.length - 1] : 0;
+    if (thresholds.length === 0 || totalThreshold === 0) {
+      progressWrapper.style.display = "none";
+      return;
+    }
+
+    const segmentsContainer = progressWrapper.querySelector(".cart-segments-container");
+    if (!segmentsContainer) return;
+
+    const segmentElements = segmentsContainer.querySelectorAll(".cart-segment");
+    const goalIcons = progressWrapper.querySelectorAll(".goal-icon");
+    const goalMessageElement = progressWrapper.querySelector(".goal-message");
+
+    if (cartMetric === 0 && progressBarBasis === "item_count") {
+      progressWrapper.style.display = "none";
+      if (goalMessageElement) goalMessageElement.style.display = "none";
+      segmentElements.forEach((segment) => {
+        const fill = segment.querySelector(".cart-segment-fill");
+        if (fill) fill.style.width = "0%";
+      });
+      return;
+    }
+
+    progressWrapper.style.display = "block";
+
+    let previousSegmentValue = 0;
+    segmentElements.forEach((segmentElement, index) => {
+      const segmentFill = segmentElement.querySelector(".cart-segment-fill");
+      if (!segmentFill) return;
+
+      let segmentMetricValue;
+      if (progressBarBasis === "item_count") {
+        segmentMetricValue = itemCountMetric;
+      } else {
+        const segmentBasis = goalBases[index] || "total";
+        segmentMetricValue = segmentBasis === "subtotal" ? excludedSubtotalMetric : excludedTotalMetric;
+      }
+
+      const currentThreshold = thresholds[index];
+      let fillPercentage = 0;
+
+      if (segmentMetricValue <= previousSegmentValue) {
+        fillPercentage = 0;
+      } else if (segmentMetricValue >= currentThreshold) {
+        fillPercentage = 100;
+      } else {
+        const segmentRange = currentThreshold - previousSegmentValue;
+        const filledAmount = segmentMetricValue - previousSegmentValue;
+        fillPercentage = Math.min((filledAmount / segmentRange) * 100, 100);
+      }
+
+      segmentFill.style.width = fillPercentage + "%";
+      previousSegmentValue = currentThreshold;
+    });
+
+    let nextGoalIndex = -1;
+    for (let i = 0; i < thresholds.length; i++) {
+      let metricForGoal;
+      if (progressBarBasis === "item_count") {
+        metricForGoal = itemCountMetric;
+      } else {
+        const goalBasis = goalBases[i] || "total";
+        metricForGoal = goalBasis === "subtotal" ? excludedSubtotalMetric : excludedTotalMetric;
+      }
+
+      if (metricForGoal < thresholds[i]) {
+        nextGoalIndex = i;
+        break;
+      }
+    }
+
+    goalIcons.forEach((goalIcon, index) => {
+      let iconMetric;
+      if (progressBarBasis === "item_count") {
+        iconMetric = itemCountMetric;
+      } else {
+        const goalBasis = goalBases[index] || "total";
+        iconMetric = goalBasis === "subtotal" ? excludedSubtotalMetric : excludedTotalMetric;
+      }
+
+      const cartTotalDiff = iconMetric - thresholds[index];
+      const icon = goalIcon.querySelector("img");
+      const goalNumber = goalIcon.dataset.index;
+
+      if (icon) {
+        if (cartTotalDiff < 0) {
+          const regularIconUrl = goalIcon.dataset.regularIcon;
+          if (regularIconUrl) {
+            icon.src = regularIconUrl;
+            icon.srcset = `${regularIconUrl} 50w`;
+            icon.alt = `Goal ${goalNumber}`;
+          }
+        } else {
+          const reachedIconUrl = goalIcon.dataset.reachedIcon;
+          if (reachedIconUrl) {
+            icon.src = reachedIconUrl;
+            icon.srcset = `${reachedIconUrl} 50w`;
+            icon.alt = `Goal ${goalNumber} Reached`;
+          }
+        }
+      }
+    });
+
+    if (goalMessageElement) {
+      goalMessageElement.style.display = "block";
+      if (nextGoalIndex === -1) {
+        const message = postGoalMessages[postGoalMessages.length - 1];
+        goalMessageElement.innerHTML = message;
+        progressWrapper.classList.add("full");
+      } else {
+        progressWrapper.classList.remove("full");
+        let metricForMessage;
+        if (progressBarBasis === "item_count") {
+          metricForMessage = itemCountMetric;
+        } else {
+          const msgBasis = goalBases[nextGoalIndex] || "total";
+          metricForMessage = msgBasis === "subtotal" ? excludedSubtotalMetric : excludedTotalMetric;
+        }
+
+        const remainingForGoal = thresholds[nextGoalIndex] - metricForMessage;
+        if (progressBarBasis === "item_count") {
+          const preGoalMessageTemplate = preGoalMessages[nextGoalIndex];
+          const message = preGoalMessageTemplate.replace("[remaining_for_goal]", remainingForGoal < 0 ? 0 : remainingForGoal);
+          goalMessageElement.innerHTML = message;
+        } else {
+          const remainingAmount = Math.max(0, remainingForGoal) / 100;
+          const remainingAmountFormatted = this.formatCurrency(currencyFormat, remainingAmount);
+          const preGoalMessageTemplate = preGoalMessages[nextGoalIndex];
+          const message = preGoalMessageTemplate.replace("[remaining_for_goal]", remainingAmountFormatted);
+          goalMessageElement.innerHTML = message;
+        }
+      }
+    }
+  }
+
+  formatCurrency(currencyFormat, amount) {
+    let formattedAmount = "";
+    formattedAmount = currencyFormat
+      .replace("{{amount}}", amount.toFixed(2)) // Standard with two decimals
+      .replace("{{amount_no_decimals}}", amount.toFixed(0)) // No decimals
+      .replace("{{amount_with_comma_separator}}", amount.toFixed(2).replace(".", ",")) // Replace period with comma
+      .replace("{{amount_no_decimals_with_comma_separator}}", amount.toFixed(0).replace(".", ",")) // No decimals, use comma
+      .replace("{{amount_with_apostrophe_separator}}", amount.toFixed(2).replace(".", "'")) // Apostrophe separator
+      .replace("{{amount_no_decimals_with_space_separator}}", amount.toFixed(0).replace(/\\B(?=(\\d{3})+(?!\\d))/g, " ")) // No decimals, space
+      .replace(
+        "{{amount_with_space_separator}}",
+        amount
+          .toFixed(2)
+          .replace(/\\B(?=(\\d{3})+(?!\\d))/g, " ")
+          .replace(".", ",")
+      ) // Space separator
+      .replace("{{amount_with_period_and_space_separator}}", amount.toFixed(2).replace(/\\B(?=(\\d{3})+(?!\\d))/g, " ")); // Period and space
+    return formattedAmount;
   }
 
   updateLiveRegions(line, message) {

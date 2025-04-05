@@ -6,7 +6,38 @@
   "company": [],
   "company_location": [],
   "location": [],
-  "market": [],
+  "market": [
+    {
+      "key": "cart_progress_goal_threshold_1",
+      "namespace": "custom",
+      "name": "Cart Progress Goal Threshold 1",
+      "description": "",
+      "type": {
+        "name": "number_decimal",
+        "category": "NUMBER"
+      }
+    },
+    {
+      "key": "cart_progress_goal_threshold_2",
+      "namespace": "custom",
+      "name": "Cart Progress Goal Threshold 2",
+      "description": "",
+      "type": {
+        "name": "number_decimal",
+        "category": "NUMBER"
+      }
+    },
+    {
+      "key": "cart_progress_goal_threshold_3",
+      "namespace": "custom",
+      "name": "Cart Progress Goal Threshold 3",
+      "description": "",
+      "type": {
+        "name": "number_decimal",
+        "category": "NUMBER"
+      }
+    }
+  ],
   "order": [],
   "page": [],
   "product": [

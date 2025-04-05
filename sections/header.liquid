@@ -20,24 +20,35 @@
   {% if request.page_type == "index" and section.settings.enable_transparent-header %}
     .header-wrapper{
       background: transparent !important;
-    position: absolute !important;
-    width: 100% !important;
-    top: 0px;
-  }
-  {% endif %}
+      position: absolute !important;
+      width: 100% !important;
+      transition: all .3liqus !important;
+      top: 0px;
+    }
+    .header-wrapper:hover {
+      background: rgb(var(--color-background)) !important;
+    }
+    .header-wrapper:hover .list-menu__item,
+    .header-wrapper:hover .header__icon.link,
+    .header-wrapper:hover .header__active-menu-item,
+    .header-wrapper:hover .disclosure__button,
+    .header-wrapper:hover .header__heading-link .h2,
+    .header-wrapper:hover details[open]>.header__submenu {
+      color: rgb(var(--color-foreground)) !important;
+    }
+{% endif %}
 
-  {% if template.name == "index" and section.settings.color-transparent  %}
+{% if template.name == "index" and section.settings.color-transparent  %}
     @media only screen and (min-width: 600px) {
         .list-menu__item, details[open]>.header__submenu {
       color: {{ section.settings.color-transparent }} !important;
           background: transparent;
         }
-      
     }
       .header__icon.link,.header__active-menu-item,.disclosure__button,.header__heading-link .h2{
       color: {{ section.settings.color-transparent }} !important;
     }
-  {% endif %}
+{% endif %}
 
   header-drawer {
     justify-self: start;

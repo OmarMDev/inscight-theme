@@ -126,6 +126,7 @@
     "show_cart_note": false,
     "cart_drawer_collection": "",
     "cart_color_scheme": "scheme-1",
+    "enable_conditional_atc_item": true,
     "override_header_font": true,
     "custom_header_font_url": "https://cdn.shopify.com/s/files/1/0603/6104/8123/files/SpaceGrotesk_wght.woff2?v=1744195721",
     "override_body_font": true,

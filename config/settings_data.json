@@ -126,6 +126,10 @@
     "show_cart_note": false,
     "cart_drawer_collection": "",
     "cart_color_scheme": "scheme-1",
+    "override_header_font": true,
+    "custom_header_font_url": "https://cdn.shopify.com/s/files/1/0603/6104/8123/files/SpaceGrotesk_wght.woff2?v=1744195721",
+    "override_body_font": true,
+    "custom_body_font_url": "https://cdn.shopify.com/s/files/1/0603/6104/8123/files/InterVariable.woff2?v=1744194041",
     "sections": {
       "main-password-header": {
         "type": "main-password-header",

@@ -54,6 +54,24 @@
       {{ body_font_bold_italic | font_face: font_display: 'swap' }}
       {{ settings.type_header_font | font_face: font_display: 'swap' }}
 
+      {% if settings.override_body_font and settings.custom_body_font_url != blank %}
+        @font-face {
+          font-family: 'CustomBodyFont';
+          src: url('{{ settings.custom_body_font_url }}') format('woff2');
+          font-weight: normal;
+          font-style: normal;
+        }
+      {% endif %}
+
+      {% if settings.override_header_font and settings.custom_header_font_url != blank %}
+        @font-face {
+          font-family: 'CustomHeaderFont';
+          src: url('{{ settings.custom_header_font_url }}') format('woff2');
+          font-weight: normal;
+          font-style: normal;
+        }
+      {% endif %}
+
       {% for scheme in settings.color_schemes -%}
         {% assign scheme_classes = scheme_classes | append: ', .color-' | append: scheme.id %}
         {% if forloop.index == 1 -%}
@@ -100,12 +118,20 @@
       }
 
       :root {
-        --font-body-family: {{ settings.type_body_font.family }}, {{ settings.type_body_font.fallback_families }};
+        {% if settings.override_body_font and settings.custom_body_font_url != blank %}
+          --font-body-family: 'CustomBodyFont', sans-serif;
+        {% else %}
+          --font-body-family: {{ settings.type_body_font.family }}, {{ settings.type_body_font.fallback_families }};
+        {% endif %}
         --font-body-style: {{ settings.type_body_font.style }};
         --font-body-weight: {{ settings.type_body_font.weight }};
         --font-body-weight-bold: {{ settings.type_body_font.weight | plus: 300 | at_most: 1000 }};
 
-        --font-heading-family: {{ settings.type_header_font.family }}, {{ settings.type_header_font.fallback_families }};
+        {% if settings.override_header_font and settings.custom_header_font_url != blank %}
+          --font-heading-family: 'CustomHeaderFont', sans-serif;
+        {% else %}
+          --font-heading-family: {{ settings.type_header_font.family }}, {{ settings.type_header_font.fallback_families }};
+        {% endif %}
         --font-heading-style: {{ settings.type_header_font.style }};
         --font-heading-weight: {{ settings.type_header_font.weight }};
 

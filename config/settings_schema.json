@@ -1700,5 +1700,34 @@
         "default": "#333"
       }
     ]
+  },
+  {
+    "name": "Custom Font Settings",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "override_header_font",
+        "label": "Override Header Font",
+        "default": false
+      },
+      {
+        "type": "url",
+        "id": "custom_header_font_url",
+        "label": "Custom Header Font URL",
+        "info": "Provide a URL to fetch the custom header font. Only applies if 'Override Header Font' is enabled."
+      },
+      {
+        "type": "checkbox",
+        "id": "override_body_font",
+        "label": "Override Body Font",
+        "default": false
+      },
+      {
+        "type": "url",
+        "id": "custom_body_font_url",
+        "label": "Custom Body Font URL",
+        "info": "Provide a URL to fetch the custom body font. Only applies if 'Override Body Font' is enabled."
+      }
+    ]
   }
 ]

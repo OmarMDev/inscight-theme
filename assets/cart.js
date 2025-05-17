@@ -1,3 +1,5 @@
+let previousSegmentPercentages = [];
+
 (function () {
   const cartItemsElement = document.querySelector("cart-items") || document.querySelector("cart-drawer-items");
   const atcItemFeatureIsEnabled = cartItemsElement?.dataset.enableConditionalAtcItem === "true";
@@ -296,6 +298,35 @@ class CartItems extends HTMLElement {
       });
   }
 
+  updateFillProgress(startWidthPercentage) {
+    const animationName = "fillProgress";
+
+    for (let i = 0; i < document.styleSheets.length; i++) {
+      const styleSheet = document.styleSheets[i];
+      try {
+        const rules = styleSheet.cssRules || styleSheet.rules;
+        for (let j = 0; j < rules.length; j++) {
+          if (rules[j].type === CSSRule.KEYFRAMES_RULE && rules[j].name === animationName) {
+            // We found the keyframes rule
+            for (let k = 0; k < rules[j].cssRules.length; k++) {
+              if (rules[j].cssRules[k].keyText === "0%") {
+                rules[j].cssRules[k].style.width = startWidthPercentage;
+
+                return; // Exit after modification
+              }
+            }
+
+            return;
+          }
+        }
+      } catch (e) {
+        console.error("Error accessing stylesheet:", e);
+        return;
+      }
+    }
+    console.log("Keyframes rule", animationName, "NOT found.");
+  }
+
   updateProgressBar({ items }) {
     const progressWrapper = document.getElementById("cart-progress-wrapper");
     if (!progressWrapper) return;
@@ -352,7 +383,15 @@ class CartItems extends HTMLElement {
       if (goalMessageElement) goalMessageElement.style.display = "none";
       segmentElements.forEach((segment) => {
         const fill = segment.querySelector(".cart-segment-fill");
-        if (fill) fill.style.width = "0%";
+        //if (fill) fill.style.width = "0%";
+        if (fill) {
+          fill.style.width = "0%"; // Immediately set width to 0
+          previousSegmentPercentages[index] = "0%";
+          this.updateFillProgress("0%"); // Set animation start to 0%
+          fill.style.animation = "none";
+          fill.offsetHeight;
+          fill.style.animation = `fillProgress 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards`;
+        }
       });
       return;
     }
@@ -385,7 +424,15 @@ class CartItems extends HTMLElement {
         fillPercentage = Math.min((filledAmount / segmentRange) * 100, 100);
       }
 
+      console.log(previousSegmentPercentages[index]);
+      this.updateFillProgress(previousSegmentPercentages[index] || "0%");
       segmentFill.style.width = fillPercentage + "%";
+      previousSegmentPercentages[index] = fillPercentage + "%";
+
+      segmentFill.style.animation = "none";
+      segmentFill.offsetHeight;
+      segmentFill.style.animation = `fillProgress 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards`;
+
       previousSegmentValue = currentThreshold;
     });
 

@@ -135,6 +135,7 @@
     "goal_1_description": "",
     "goal_1_icon": "shopify://shop_images/shipping.jpg",
     "goal_1_icon_reached": "shopify://shop_images/shipping.jpg",
+    "enable_goal_2": true,
     "cart_progress_bar_color": "#333",
     "cart_progress_bar_full_color": "#000000",
     "override_header_font": true,

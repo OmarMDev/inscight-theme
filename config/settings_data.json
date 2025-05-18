@@ -130,6 +130,7 @@
     "atc_item_metaobject_handle": "charger-for-set",
     "enable_cart_progress_bar": true,
     "show_progress_bar_icons": true,
+    "progress_bar_basis": "item_count",
     "goal_1_pre_goal_message": "Spend [remaining_for_goal] more for <strong>free shipping!</strong>",
     "goal_1_post_goal_message": "<strong> Free shipping unlocked! </strong>",
     "goal_1_description": "",

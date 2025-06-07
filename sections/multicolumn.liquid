@@ -75,6 +75,7 @@
               style="--animation-order: {{ forloop.index }};"
             {% endif %}
           >
+            <a href="{{ block.settings.link }}" style="display: block; text-decoration: none; color: inherit;">
             <div class="multicolumn-card content-container">
               {%- if block.settings.image != blank -%}
                 {% if section.settings.image_ratio == 'adapt' or section.settings.image_ratio == 'circle' %}
@@ -142,6 +143,7 @@
                 {%- endif -%}
               </div>
             </div>
+            </a>
           </li>
         {%- endfor -%}
       </ul>

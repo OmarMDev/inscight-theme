@@ -31,10 +31,19 @@
         border-radius: {{ section.settings.border_radius }};
       {% endif %}
     }
-
     .section-{{ section.id }}-padding {
       padding-top: {{ section.settings.padding_top }}px;
       padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+  @media screen and (max-width: 749px) {
+    .footer-block.grid__item.footer-block--menu {
+      margin: 0;
+      padding: 1rem 0;
+      border-bottom: 1px solid black;
+    }
+    .footer-block.grid__item.footer-block--menu:first-child {    padding: 1rem 0;
+      border-top: 1px solid black;
     }
   }
 {%- endstyle -%}
@@ -88,24 +97,16 @@
                   style="--animation-order: {{ forloop.index }};flex-basis:0;{% if block.type == 'image_link' %}flex-grow:{{ block.settings.flex_grow | default: 0 }};{% endif %}"
                 {% endif %}
               >
-                {%- if block.settings.heading != blank -%}
-                  <h2 class="footer-block__heading inline-richtext"
-                    style="
-                      {% if block.settings.heading_font_size %}font-size: {{ block.settings.heading_font_size }};{% endif %}
-                      {% if block.settings.heading_font_weight %}font-weight: {{ block.settings.heading_font_weight }};{% endif %}
-                      {% if block.settings.heading_margin_bottom %}margin-bottom: {{ block.settings.heading_margin_bottom }};{% endif %}
-                    "
-                  >{{- block.settings.heading -}}</h2>
-                {%- endif -%}
-
-                {%- case block.type -%}
-                  {%- when '@app' -%}
-                    {% render block %}
-                  {%- when 'text' -%}
-                    <div class="footer-block__details-content rte">
-                      {{ block.settings.subtext }}
-                    </div>
-                  {%- when 'link_list' -%}
+                {%- if block.type == 'link_list' -%}
+                  <details class="footer-accordion"{% if request.design_mode or request.page_type contains 'index' %} open{% endif %}>
+                    <summary>
+                      <span>
+                        {%- if block.settings.heading != blank -%}
+                          {{- block.settings.heading -}}
+                        {%- endif -%}
+                      </span>
+                      <span aria-hidden="true" style="margin-left:auto;">&#x25BC;</span>
+                    </summary>
                     {%- if block.settings.menu != blank -%}
                       <ul class="footer-block__details-content list-unstyled">
                         {%- for link in block.settings.menu.links -%}
@@ -126,87 +127,172 @@
                         {%- endfor -%}
                       </ul>
                     {%- endif -%}
-                  {%- when 'brand_information' -%}
-                    <div class="footer-block__brand-info">
-                      {%- if settings.brand_image != blank -%}
-                        {%- assign brand_image_height = settings.brand_image_width
-                          | divided_by: settings.brand_image.aspect_ratio
-                        -%}
-                        <div
-                          class="footer-block__image-wrapper"
-                          style="max-width: min(100%, {{ settings.brand_image_width }}px);"
-                        >
-                          {{
-                            settings.brand_image
-                            | image_url: width: 1100
-                            | image_tag:
-                              loading: 'lazy',
-                              widths: '50, 100, 150, 200, 300, 400, 550, 800, 1100',
-                              height: brand_image_height,
-                              width: settings.brand_image_width
-                          }}
-                        </div>
+                  </details>
+                  <script>
+                    // Close accordions on mobile by default, keep open on desktop if set
+                    document.addEventListener('DOMContentLoaded', function() {
+                      var isMobile = window.matchMedia('(max-width: 749px)').matches;
+                      if (isMobile) {
+                        document.querySelectorAll('.footer-accordion').forEach(function(details) {
+                          if (!details.hasAttribute('data-force-open')) {
+                            details.removeAttribute('open');
+                          }
+                        });
+                      }
+                    });
+                  </script>
+                  <style>
+                    .footer-accordion[open] > summary span[aria-hidden] {
+                      transform: rotate(180deg);
+                      transition: transform 0.1s;
+                    }
+                    .footer-accordion > summary span[aria-hidden] {
+                      transition: transform 0.1s;
+                    }
+                    .footer-accordion > summary {
+                      cursor: pointer;
+                      display: flex;
+                      align-items: center;
+                      font-weight: bold;
+                      padding: 0.5em 0;
+                      outline: none;
+                      list-style: none;
+                    }
+                    .footer-accordion > summary::-webkit-details-marker {
+                      display: none;
+                    }
+                    @media (min-width: 750px) {
+                      .footer-accordion > summary span[aria-hidden="true"] {
+                        display: none;
+                      }
+                    }
+                    @media (max-width: 749px) {
+                      .footer-accordion:not([open]) > ul,
+                      .footer-accordion:not([open]) > .footer-block__details-content {
+                        display: none;
+                      }
+                    }
+                  </style>
+                {%- else -%}
+                  {%- if block.settings.heading != blank -%}
+                    <h2 class="footer-block__heading inline-richtext"
+                      style="
+                        {% if block.settings.heading_font_size %}font-size: {{ block.settings.heading_font_size }};{% endif %}
+                        {% if block.settings.heading_font_weight %}font-weight: {{ block.settings.heading_font_weight }};{% endif %}
+                        {% if block.settings.heading_margin_bottom %}margin-bottom: {{ block.settings.heading_margin_bottom }};{% endif %}
+                      "
+                    >{{- block.settings.heading -}}</h2>
+                  {%- endif -%}
+                  {%- case block.type -%}
+                    {%- when '@app' -%}
+                      {% render block %}
+                    {%- when 'text' -%}
+                      <div class="footer-block__details-content rte">
+                        {{ block.settings.subtext }}
+                      </div>
+                    {%- when 'link_list' -%}
+                      {%- if block.settings.menu != blank -%}
+                        <ul class="footer-block__details-content list-unstyled">
+                          {%- for link in block.settings.menu.links -%}
+                            <li>
+                              <a
+                                href="{{ link.url }}"
+                                class="link link--text list-menu__item list-menu__item--link{% if link.active %} list-menu__item--active{% endif %}"
+                                style="
+                                  {% if block.settings.link_font_size %}font-size: {{ block.settings.link_font_size }};{% endif %}
+                                  {% if block.settings.link_font_weight %}font-weight: {{ block.settings.link_font_weight }};{% endif %}
+                                  {% if block.settings.li_padding_top %}padding-top: {{ block.settings.li_padding_top }};{% endif %}
+                                  {% if block.settings.li_padding_bottom %}padding-bottom: {{ block.settings.li_padding_bottom }};{% endif %}
+                                "
+                              >
+                                {{ link.title | escape }}
+                              </a>
+                            </li>
+                          {%- endfor -%}
+                        </ul>
                       {%- endif -%}
-                      {%- if settings.brand_headline != blank -%}
-                        <h2 class="footer-block__heading rte">{{ settings.brand_headline }}</h2>
-                      {%- endif -%}
-                      {%- if settings.brand_description != blank -%}
-                        <div class="rte">{{ settings.brand_description }}</div>
-                      {%- endif -%}
-                      {%- if block.settings.show_social and has_social_icons -%}
-                        {%- render 'social-icons', class: 'footer__list-social' -%}
-                      {%- endif -%}
-                    </div>
-                  {%- when 'image' -%}
-                    <div class="footer-block__details-content footer-block-image {{ block.settings.alignment }}">
-                      {%- if block.settings.image != blank -%}
-                        {%- assign image_size_2x = block.settings.image_width | times: 2 | at_most: 5760 -%}
-                        <div
-                          class="footer-block__image-wrapper"
-                          style="max-width: min(100%, {{ block.settings.image_width }}px);"
-                        >
-                          <img
-                            srcset="{{ block.settings.image | image_url: width: block.settings.image_width }}, {{ block.settings.image | image_url: width: image_size_2x }} 2x"
-                            src="{{ block.settings.image | image_url: width: 760 }}"
-                            alt="{{ block.settings.image.alt | escape }}"
-                            loading="lazy"
-                            width="{{ block.settings.image.width }}"
-                            height="{{ block.settings.image.height }}"
+                    {%- when 'brand_information' -%}
+                      <div class="footer-block__brand-info">
+                        {%- if settings.brand_image != blank -%}
+                          {%- assign brand_image_height = settings.brand_image_width
+                            | divided_by: settings.brand_image.aspect_ratio
+                          -%}
+                          <div
+                            class="footer-block__image-wrapper"
+                            style="max-width: min(100%, {{ settings.brand_image_width }}px);"
                           >
-                        </div>
-                      {%- else -%}
-                        {{ 'image' | placeholder_svg_tag: 'placeholder-svg placeholder' }}
-                      {%- endif -%}
-                    </div>
-                  {%- when 'image_link' -%}
-                    <div class="footer-block__details-content footer-block-image {{ block.settings.alignment }}">
-                      {%- if block.settings.image != blank -%}
-                        {%- assign image_size_2x = block.settings.image_width | times: 2 | at_most: 5760 -%}
-                        <div
-                          class="footer-block__image-wrapper"
-                          style="max-width: min(100%, {{ block.settings.image_width }}px);"
-                        >
-                          {%- if block.settings.url != blank -%}
-                            <a href="{{ block.settings.url | escape }}" {% if block.settings.open_in_new_tab %}target="_blank" rel="noopener"{% endif %}>
-                          {%- endif -%}
-                          <img
-                            srcset="{{ block.settings.image | image_url: width: block.settings.image_width }}, {{ block.settings.image | image_url: width: image_size_2x }} 2x"
-                            src="{{ block.settings.image | image_url: width: 760 }}"
-                            alt="{{ block.settings.image.alt | escape }}"
-                            loading="lazy"
-                            width="{{ block.settings.image.width }}"
-                            height="{{ block.settings.image.height }}"
-                            style="{% if block.settings.border_radius %}border-radius: {{ block.settings.border_radius }};{% endif %}"
+                            {{
+                              settings.brand_image
+                              | image_url: width: 1100
+                              | image_tag:
+                                loading: 'lazy',
+                                widths: '50, 100, 150, 200, 300, 400, 550, 800, 1100',
+                                height: brand_image_height,
+                                width: settings.brand_image_width
+                            }}
+                          </div>
+                        {%- endif -%}
+                        {%- if settings.brand_headline != blank -%}
+                          <h2 class="footer-block__heading rte">{{ settings.brand_headline }}</h2>
+                        {%- endif -%}
+                        {%- if settings.brand_description != blank -%}
+                          <div class="rte">{{ settings.brand_description }}</div>
+                        {%- endif -%}
+                        {%- if block.settings.show_social and has_social_icons -%}
+                          {%- render 'social-icons', class: 'footer__list-social' -%}
+                        {%- endif -%}
+                      </div>
+                    {%- when 'image' -%}
+                      <div class="footer-block__details-content footer-block-image {{ block.settings.alignment }}">
+                        {%- if block.settings.image != blank -%}
+                          {%- assign image_size_2x = block.settings.image_width | times: 2 | at_most: 5760 -%}
+                          <div
+                            class="footer-block__image-wrapper"
+                            style="max-width: min(100%, {{ block.settings.image_width }}px);"
                           >
-                          {%- if block.settings.url != blank -%}
-                            </a>
-                          {%- endif -%}
-                        </div>
-                      {%- else -%}
-                        {{ 'image' | placeholder_svg_tag: 'placeholder-svg placeholder' }}
-                      {%- endif -%}
-                    </div>
-                {%- endcase -%}
+                            <img
+                              srcset="{{ block.settings.image | image_url: width: block.settings.image_width }}, {{ block.settings.image | image_url: width: image_size_2x }} 2x"
+                              src="{{ block.settings.image | image_url: width: 760 }}"
+                              alt="{{ block.settings.image.alt | escape }}"
+                              loading="lazy"
+                              width="{{ block.settings.image.width }}"
+                              height="{{ block.settings.image.height }}"
+                            >
+                          </div>
+                        {%- else -%}
+                          {{ 'image' | placeholder_svg_tag: 'placeholder-svg placeholder' }}
+                        {%- endif -%}
+                      </div>
+                    {%- when 'image_link' -%}
+                      <div class="footer-block__details-content footer-block-image {{ block.settings.alignment }}">
+                        {%- if block.settings.image != blank -%}
+                          {%- assign image_size_2x = block.settings.image_width | times: 2 | at_most: 5760 -%}
+                          <div
+                            class="footer-block__image-wrapper"
+                            style="max-width: min(100%, {{ block.settings.image_width }}px);"
+                          >
+                            {%- if block.settings.url != blank -%}
+                              <a href="{{ block.settings.url | escape }}" {% if block.settings.open_in_new_tab %}target="_blank" rel="noopener"{% endif %}>
+                            {%- endif -%}
+                            <img
+                              srcset="{{ block.settings.image | image_url: width: block.settings.image_width }}, {{ block.settings.image | image_url: width: image_size_2x }} 2x"
+                              src="{{ block.settings.image | image_url: width: 760 }}"
+                              alt="{{ block.settings.image.alt | escape }}"
+                              loading="lazy"
+                              width="{{ block.settings.image.width }}"
+                              height="{{ block.settings.image.height }}"
+                              style="{% if block.settings.border_radius %}border-radius: {{ block.settings.border_radius }};{% endif %}"
+                            >
+                            {%- if block.settings.url != blank -%}
+                              </a>
+                            {%- endif -%}
+                          </div>
+                        {%- else -%}
+                          {{ 'image' | placeholder_svg_tag: 'placeholder-svg placeholder' }}
+                        {%- endif -%}
+                      </div>
+                  {%- endcase -%}
+                {%- endif -%}
               </div>
             {%- endfor -%}
           </div>

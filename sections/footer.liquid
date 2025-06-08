@@ -8,6 +8,12 @@
 {%- style -%}
   .footer {
     margin-top: {{ section.settings.margin_top | times: 0.75 | round: 0 }}px;
+    margin-bottom: {{ section.settings.margin_bottom | times: 0.75 | round: 0 | default: 0 }}px;
+    margin-left: {{ section.settings.margin_left | times: 0.75 | round: 0 | default: 0 }}px;
+    margin-right: {{ section.settings.margin_right | times: 0.75 | round: 0 | default: 0 }}px;
+    {% if section.settings.border_radius %}
+      border-radius: {{ section.settings.border_radius }};
+    {% endif %}
   }
 
   .section-{{ section.id }}-padding {
@@ -18,6 +24,12 @@
   @media screen and (min-width: 750px) {
     .footer {
       margin-top: {{ section.settings.margin_top }}px;
+      margin-bottom: {{ section.settings.margin_bottom | default: 0 }}px;
+      margin-left: {{ section.settings.margin_left | default: 0 }}px;
+      margin-right: {{ section.settings.margin_right | default: 0 }}px;
+      {% if section.settings.border_radius %}
+        border-radius: {{ section.settings.border_radius }};
+      {% endif %}
     }
 
     .section-{{ section.id }}-padding {
@@ -68,15 +80,22 @@
           >
             {%- for block in section.blocks -%}
               <div
-                class="footer-block grid__item{% if block.type == 'link_list' %} footer-block--menu{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+                class="footer-block grid__item{% if block.type == 'link_list' %} footer-block--menu{% endif %}{% if block.type == 'image_link' %} footer-block--image-link{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
                 {{ block.shopify_attributes }}
+                style="flex-basis:0;{% if block.type == 'image_link' %}flex-grow:{{ block.settings.flex_grow | default: 0 }};{% endif %}"
                 {% if settings.animations_reveal_on_scroll %}
                   data-cascade
-                  style="--animation-order: {{ forloop.index }};"
+                  style="--animation-order: {{ forloop.index }};flex-basis:0;{% if block.type == 'image_link' %}flex-grow:{{ block.settings.flex_grow | default: 0 }};{% endif %}"
                 {% endif %}
               >
                 {%- if block.settings.heading != blank -%}
-                  <h2 class="footer-block__heading inline-richtext">{{- block.settings.heading -}}</h2>
+                  <h2 class="footer-block__heading inline-richtext"
+                    style="
+                      {% if block.settings.heading_font_size %}font-size: {{ block.settings.heading_font_size }};{% endif %}
+                      {% if block.settings.heading_font_weight %}font-weight: {{ block.settings.heading_font_weight }};{% endif %}
+                      {% if block.settings.heading_margin_bottom %}margin-bottom: {{ block.settings.heading_margin_bottom }};{% endif %}
+                    "
+                  >{{- block.settings.heading -}}</h2>
                 {%- endif -%}
 
                 {%- case block.type -%}
@@ -94,6 +113,12 @@
                             <a
                               href="{{ link.url }}"
                               class="link link--text list-menu__item list-menu__item--link{% if link.active %} list-menu__item--active{% endif %}"
+                              style="
+                                {% if block.settings.link_font_size %}font-size: {{ block.settings.link_font_size }};{% endif %}
+                                {% if block.settings.link_font_weight %}font-weight: {{ block.settings.link_font_weight }};{% endif %}
+                                {% if block.settings.link_padding_top %}padding-top: {{ block.settings.link_padding_top }};{% endif %}
+                                {% if block.settings.link_padding_bottom %}padding-bottom: {{ block.settings.link_padding_bottom }};{% endif %}
+                              "
                             >
                               {{ link.title | escape }}
                             </a>
@@ -148,6 +173,34 @@
                             width="{{ block.settings.image.width }}"
                             height="{{ block.settings.image.height }}"
                           >
+                        </div>
+                      {%- else -%}
+                        {{ 'image' | placeholder_svg_tag: 'placeholder-svg placeholder' }}
+                      {%- endif -%}
+                    </div>
+                  {%- when 'image_link' -%}
+                    <div class="footer-block__details-content footer-block-image {{ block.settings.alignment }}">
+                      {%- if block.settings.image != blank -%}
+                        {%- assign image_size_2x = block.settings.image_width | times: 2 | at_most: 5760 -%}
+                        <div
+                          class="footer-block__image-wrapper"
+                          style="max-width: min(100%, {{ block.settings.image_width }}px);"
+                        >
+                          {%- if block.settings.url != blank -%}
+                            <a href="{{ block.settings.url | escape }}" {% if block.settings.open_in_new_tab %}target="_blank" rel="noopener"{% endif %}>
+                          {%- endif -%}
+                          <img
+                            srcset="{{ block.settings.image | image_url: width: block.settings.image_width }}, {{ block.settings.image | image_url: width: image_size_2x }} 2x"
+                            src="{{ block.settings.image | image_url: width: 760 }}"
+                            alt="{{ block.settings.image.alt | escape }}"
+                            loading="lazy"
+                            width="{{ block.settings.image.width }}"
+                            height="{{ block.settings.image.height }}"
+                            style="{% if block.settings.border_radius %}border-radius: {{ block.settings.border_radius }};{% endif %}"
+                          >
+                          {%- if block.settings.url != blank -%}
+                            </a>
+                          {%- endif -%}
                         </div>
                       {%- else -%}
                         {{ 'image' | placeholder_svg_tag: 'placeholder-svg placeholder' }}
@@ -297,12 +350,15 @@
         {%- endif -%}
       </div>
     </div>
-    <div class="footer__content-bottom-wrapper page-width{% if section.settings.enable_country_selector == false and section.settings.enable_language_selector == false %} footer__content-bottom-wrapper--center{% endif %}">
+    <div class="footer__content-bottom-wrapper page-width{% if section.settings.enable_country_selector == false and section.settings.enable_language_selector == false %} footer__content-bottom-wrapper--center{% endif %}" style="display: flex; justify-content: space-between; align-items: center;">
+      {% if section.settings.show_footer_copyright %}
       <div class="footer__copyright caption">
         <small class="copyright__content"
           >&copy; {{ 'now' | date: '%Y' }}, {{ shop.name | link_to: routes.root_url -}}
         </small>
+        {% if section.settings.show_powered_by_link %}
         <small class="copyright__content">{{ powered_by_link }}</small>
+        {% endif %}
         {%- if section.settings.show_policy -%}
           <ul class="policies list-unstyled">
             {%- for policy in shop.policies -%}
@@ -316,6 +372,15 @@
             {%- endfor -%}
           </ul>
         {%- endif -%}
+      </div>
+      {% endif %}
+      <div class="footer__bottom-extra">
+        {% if section.settings.bottom_richtext != blank %}
+          <div class="footer__bottom-richtext rte"
+            style="{% if section.settings.bottom_richtext_font_size %}font-size: {{ section.settings.bottom_richtext_font_size }};{% endif %}">
+            {{ section.settings.bottom_richtext }}
+          </div>
+        {% endif %}
       </div>
     </div>
   </div>
@@ -343,6 +408,48 @@
           "id": "menu",
           "default": "footer",
           "label": "t:sections.footer.blocks.link_list.settings.menu.label"
+        },
+        {
+          "type": "text",
+          "id": "li_padding_top",
+          "label": "List item padding top (CSS, e.g. 0.5em or 8px)",
+          "default": "0.5rem"
+        },
+        {
+          "type": "text",
+          "id": "li_padding_bottom",
+          "label": "List item padding bottom (CSS, e.g. 0.5em or 8px)",
+          "default": "0.5rem"
+        },
+        {
+          "type": "text",
+          "id": "link_font_size",
+          "label": "Link font size (CSS, e.g. 1rem or 16px) Use rem for responsive size",
+          "default": "auto"
+        },
+        {
+          "type": "text",
+          "id": "link_font_weight",
+          "label": "Link font weight (e.g. 400, 500, 700, bold)",
+          "default": "auto"
+        },
+        {
+          "type": "text",
+          "id": "heading_font_size",
+          "label": "Heading font size (CSS, e.g. 1.2rem or 20px)",
+          "default": "auto"
+        },
+        {
+          "type": "text",
+          "id": "heading_font_weight",
+          "label": "Heading font weight (e.g. 400, 500, 700, bold)",
+          "default": "auto"
+        },
+        {
+          "type": "text",
+          "id": "heading_margin_bottom",
+          "label": "Heading margin bottom (CSS, e.g. 0.5em or 8px)",
+          "default": "1rem"
         }
       ]
     },
@@ -383,7 +490,7 @@
     },
     {
       "type": "image",
-      "name": "Image",
+      "name": "Default Image",
       "settings": [
         {
           "type": "image_picker",
@@ -419,6 +526,71 @@
             }
           ],
           "default": "center"
+        }
+      ]
+    },
+    {
+      "type": "image_link",
+      "name": "Image with link",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "range",
+          "id": "image_width",
+          "min": 50,
+          "max": 550,
+          "step": 5,
+          "unit": "px",
+          "label": "Width",
+          "default": 100
+        },
+        {
+          "type": "select",
+          "id": "alignment",
+          "label": "Alignment",
+          "options": [
+            {
+              "value": "",
+              "label": "Left"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            },
+            {
+              "value": "right",
+              "label": "Right"
+            }
+          ],
+          "default": "center"
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "Link URL"
+        },
+        {
+          "type": "checkbox",
+          "id": "open_in_new_tab",
+          "label": "Open in new tab",
+          "default": false
+        },
+        {
+          "type": "number",
+          "id": "flex_grow",
+          "label": "Flex Grow",
+          "default": 0,
+          "info": "Allows decimal values (e.g. 0.5, 1.2)"
+        },
+        {
+          "type": "text",
+          "id": "border_radius",
+          "label": "Border Radius (CSS, e.g. 8px or 50%)",
+          "default": "0"
         }
       ]
     }
@@ -507,6 +679,42 @@
       "default": 0
     },
     {
+      "type": "range",
+      "id": "margin_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Margin bottom",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_left",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Margin left",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_right",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Margin right",
+      "default": 0
+    },
+    {
+      "type": "text",
+      "id": "border_radius",
+      "label": "Border radius (CSS, e.g. 12px or 1rem)",
+      "default": "0"
+    },
+    {
       "type": "header",
       "content": "t:sections.all.padding.section_padding_heading"
     },
@@ -529,6 +737,30 @@
       "unit": "px",
       "label": "t:sections.all.padding.padding_bottom",
       "default": 36
+    },
+    {
+      "type": "richtext",
+      "id": "bottom_richtext",
+      "label": "Footer bottom rich text",
+      "default": "t:sections.footer.blocks.text.settings.subtext.default"
+    },
+    {
+      "type": "text",
+      "id": "bottom_richtext_font_size",
+      "label": "Footer bottom rich text font size (CSS, e.g. 1rem or 16px)",
+      "default": "1rem"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_footer_copyright",
+      "label": "Show copyright section",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_powered_by_link",
+      "label": "Show powered by link",
+      "default": true
     }
   ],
   "default": {

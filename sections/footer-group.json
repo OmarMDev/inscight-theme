@@ -32,11 +32,7 @@
           "settings": {}
         }
       },
-      "block_order": [
-        "heading_9BhEQM",
-        "paragraph_XRKHYY",
-        "email_form_gXP8pG"
-      ],
+      "block_order": ["heading_9BhEQM", "paragraph_XRKHYY", "email_form_gXP8pG"],
       "name": "t:sections.newsletter.presets.name",
       "settings": {
         "color_scheme": "",
@@ -103,12 +99,7 @@
           }
         }
       },
-      "block_order": [
-        "link_list_4FBzcC",
-        "link_list_XkX8KN",
-        "link_list_3d884a",
-        "image_link_j7YpXM"
-      ],
+      "block_order": ["link_list_4FBzcC", "link_list_XkX8KN", "link_list_3d884a", "image_link_j7YpXM"],
       "settings": {
         "color_scheme": "scheme-1",
         "newsletter_enable": false,
@@ -133,8 +124,5 @@
       }
     }
   },
-  "order": [
-    "newsletter_8mxd3Q",
-    "footer"
-  ]
+  "order": ["newsletter_8mxd3Q", "footer"]
 }

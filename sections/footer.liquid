@@ -98,14 +98,19 @@
                 {% endif %}
               >
                 {%- if block.type == 'link_list' -%}
-                  <details class="footer-accordion"{% if request.design_mode or request.page_type contains 'index' %} open{% endif %}>
+                  <details
+                    class="footer-accordion"
+                    open
+                  >
                     <summary>
                       <span>
                         {%- if block.settings.heading != blank -%}
                           {{- block.settings.heading -}}
                         {%- endif -%}
                       </span>
-                      <span aria-hidden="true" style="margin-left:auto;">&#x25BC;</span>
+                      <svg viewBox="0 0 10 6">
+                        <path fill="currentColor" fill-rule="evenodd" d="M9.354.646a.5.5 0 0 0-.708 0L5 4.293 1.354.646a.5.5 0 0 0-.708.708l4 4a.5.5 0 0 0 .708 0l4-4a.5.5 0 0 0 0-.708" clip-rule="evenodd"></path>
+                      </svg>
                     </summary>
                     {%- if block.settings.menu != blank -%}
                       <ul class="footer-block__details-content list-unstyled">
@@ -130,10 +135,10 @@
                   </details>
                   <script>
                     // Close accordions on mobile by default, keep open on desktop if set
-                    document.addEventListener('DOMContentLoaded', function() {
+                    document.addEventListener('DOMContentLoaded', function () {
                       var isMobile = window.matchMedia('(max-width: 749px)').matches;
                       if (isMobile) {
-                        document.querySelectorAll('.footer-accordion').forEach(function(details) {
+                        document.querySelectorAll('.footer-accordion').forEach(function (details) {
                           if (!details.hasAttribute('data-force-open')) {
                             details.removeAttribute('open');
                           }
@@ -142,16 +147,22 @@
                     });
                   </script>
                   <style>
-                    .footer-accordion[open] > summary span[aria-hidden] {
+                    details.footer-accordion summary svg {
+                      width: 16px;
+                      height: auto;
+                    }
+
+                    .footer-accordion[open] > summary svg {
                       transform: rotate(180deg);
                       transition: transform 0.1s;
                     }
-                    .footer-accordion > summary span[aria-hidden] {
+                    .footer-accordion > summary svg {
                       transition: transform 0.1s;
                     }
                     .footer-accordion > summary {
                       cursor: pointer;
                       display: flex;
+                      justify-content: space-between;
                       align-items: center;
                       font-weight: bold;
                       padding: 0.5em 0;
@@ -162,8 +173,12 @@
                       display: none;
                     }
                     @media (min-width: 750px) {
-                      .footer-accordion > summary span[aria-hidden="true"] {
+                      .footer-accordion > summary svg {
                         display: none;
+                      }
+                      .footer-accordion > summary {
+                        pointer-events: none;
+                        cursor: default;
                       }
                     }
                     @media (max-width: 749px) {
@@ -175,13 +190,16 @@
                   </style>
                 {%- else -%}
                   {%- if block.settings.heading != blank -%}
-                    <h2 class="footer-block__heading inline-richtext"
+                    <h2
+                      class="footer-block__heading inline-richtext"
                       style="
                         {% if block.settings.heading_font_size %}font-size: {{ block.settings.heading_font_size }};{% endif %}
                         {% if block.settings.heading_font_weight %}font-weight: {{ block.settings.heading_font_weight }};{% endif %}
                         {% if block.settings.heading_margin_bottom %}margin-bottom: {{ block.settings.heading_margin_bottom }};{% endif %}
                       "
-                    >{{- block.settings.heading -}}</h2>
+                    >
+                      {{- block.settings.heading -}}
+                    </h2>
                   {%- endif -%}
                   {%- case block.type -%}
                     {%- when '@app' -%}
@@ -272,7 +290,12 @@
                             style="max-width: min(100%, {{ block.settings.image_width }}px);"
                           >
                             {%- if block.settings.url != blank -%}
-                              <a href="{{ block.settings.url | escape }}" {% if block.settings.open_in_new_tab %}target="_blank" rel="noopener"{% endif %}>
+                              <a
+                                href="{{ block.settings.url | escape }}"
+                                {% if block.settings.open_in_new_tab %}
+                                  target="_blank" rel="noopener"
+                                {% endif %}
+                              >
                             {%- endif -%}
                             <img
                               srcset="{{ block.settings.image | image_url: width: block.settings.image_width }}, {{ block.settings.image | image_url: width: image_size_2x }} 2x"
@@ -388,88 +411,138 @@
       </div>
     {%- endunless -%}
   {%- endif -%}
+  {%- if section.settings.override_footer_column_layout -%}
+    <style>
+      .footer__content-bottom {
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-rows: 1fr;
 
-  <div
-    class="footer__content-bottom{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
-    {% if settings.animations_reveal_on_scroll %}
-      data-cascade
-    {% endif %}
-  >
-    <div class="footer__content-bottom-wrapper page-width">
-      <div class="footer__column footer__localization isolate">
-        {%- if section.settings.enable_country_selector and localization.available_countries.size > 1 -%}
-          <localization-form>
-            {%- form 'localization', id: 'FooterCountryForm', class: 'localization-form' -%}
-              <div>
-                <h2 class="caption-large text-body" id="FooterCountryLabel">{{ 'localization.country_label' | t }}</h2>
-                {%- render 'country-localization', localPosition: 'FooterCountry' -%}
-              </div>
-            {%- endform -%}
-          </localization-form>
-        {%- endif -%}
+        grid-template-areas: 'contact payment trustpilot';
+      }
 
-        {%- if section.settings.enable_language_selector and localization.available_languages.size > 1 -%}
-          <localization-form>
-            {%- form 'localization', id: 'FooterLanguageForm', class: 'localization-form' -%}
-              <div>
-                <h2 class="caption-large text-body" id="FooterLanguageLabel">
-                  {{ 'localization.language_label' | t }}
-                </h2>
-                {%- render 'language-localization', localPosition: 'FooterLanguage' -%}
-              </div>
-            {%- endform -%}
-          </localization-form>
-        {%- endif -%}
+      .footer__content .footer_payment {
+        grid-area: payment;
+      }
+      .footer__content .footer__bottom-extra {
+        grid-area: contact;
+      }
+      .footer__content .footer__bottom-trustpilotlink {
+        grid-area: trustpilot;
+      }
+    </style>
+    <div class="footer__content-bottom page-width">
+      <div class="footer__payment">
+        <span class="visually-hidden">{{ 'sections.footer.payment' | t }}</span>
+        <ul class="list list-payment" role="list">
+          {%- for type in shop.enabled_payment_types -%}
+            <li class="list-payment__item">
+              {{ type | payment_type_svg_tag: class: 'icon icon--full-color' }}
+            </li>
+          {%- endfor -%}
+        </ul>
       </div>
-      <div class="footer__column footer__column--info">
-        {%- if section.settings.payment_enable -%}
-          <div class="footer__payment">
-            <span class="visually-hidden">{{ 'sections.footer.payment' | t }}</span>
-            <ul class="list list-payment" role="list">
-              {%- for type in shop.enabled_payment_types -%}
-                <li class="list-payment__item">
-                  {{ type | payment_type_svg_tag: class: 'icon icon--full-color' }}
-                </li>
-              {%- endfor -%}
-            </ul>
-          </div>
-        {%- endif -%}
-      </div>
-    </div>
-    <div class="footer__content-bottom-wrapper page-width{% if section.settings.enable_country_selector == false and section.settings.enable_language_selector == false %} footer__content-bottom-wrapper--center{% endif %}" style="display: flex; justify-content: space-between; align-items: center;">
-      {% if section.settings.show_footer_copyright %}
-      <div class="footer__copyright caption">
-        <small class="copyright__content"
-          >&copy; {{ 'now' | date: '%Y' }}, {{ shop.name | link_to: routes.root_url -}}
-        </small>
-        {% if section.settings.show_powered_by_link %}
-        <small class="copyright__content">{{ powered_by_link }}</small>
-        {% endif %}
-        {%- if section.settings.show_policy -%}
-          <ul class="policies list-unstyled">
-            {%- for policy in shop.policies -%}
-              {%- if policy != blank -%}
-                <li>
-                  <small class="copyright__content"
-                    ><a href="{{ policy.url }}">{{ policy.title | escape }}</a></small
-                  >
-                </li>
-              {%- endif -%}
-            {%- endfor -%}
-          </ul>
-        {%- endif -%}
-      </div>
-      {% endif %}
       <div class="footer__bottom-extra">
         {% if section.settings.bottom_richtext != blank %}
-          <div class="footer__bottom-richtext rte"
-            style="{% if section.settings.bottom_richtext_font_size %}font-size: {{ section.settings.bottom_richtext_font_size }};{% endif %}">
+          <div
+            class="footer__bottom-richtext rte"
+            style="{% if section.settings.bottom_richtext_font_size %}font-size: {{ section.settings.bottom_richtext_font_size }};{% endif %}"
+          >
             {{ section.settings.bottom_richtext }}
           </div>
         {% endif %}
       </div>
+      <div class="footer__bottom-trustpilotlink">trustpilot button</div>
     </div>
-  </div>
+  {% else %}
+    <div
+      class="footer__content-bottom{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+      {% if settings.animations_reveal_on_scroll %}
+        data-cascade
+      {% endif %}
+    >
+      <div class="footer__content-bottom-wrapper page-width">
+        <div class="footer__column footer__localization isolate">
+          {%- if section.settings.enable_country_selector and localization.available_countries.size > 1 -%}
+            <localization-form>
+              {%- form 'localization', id: 'FooterCountryForm', class: 'localization-form' -%}
+                <div>
+                  <h2 class="caption-large text-body" id="FooterCountryLabel">
+                    {{ 'localization.country_label' | t }}
+                  </h2>
+                  {%- render 'country-localization', localPosition: 'FooterCountry' -%}
+                </div>
+              {%- endform -%}
+            </localization-form>
+          {%- endif -%}
+
+          {%- if section.settings.enable_language_selector and localization.available_languages.size > 1 -%}
+            <localization-form>
+              {%- form 'localization', id: 'FooterLanguageForm', class: 'localization-form' -%}
+                <div>
+                  <h2 class="caption-large text-body" id="FooterLanguageLabel">
+                    {{ 'localization.language_label' | t }}
+                  </h2>
+                  {%- render 'language-localization', localPosition: 'FooterLanguage' -%}
+                </div>
+              {%- endform -%}
+            </localization-form>
+          {%- endif -%}
+        </div>
+        <div class="footer__column footer__column--info">
+          {%- if section.settings.payment_enable -%}
+            <div class="footer__payment">
+              <span class="visually-hidden">{{ 'sections.footer.payment' | t }}</span>
+              <ul class="list list-payment" role="list">
+                {%- for type in shop.enabled_payment_types -%}
+                  <li class="list-payment__item">
+                    {{ type | payment_type_svg_tag: class: 'icon icon--full-color' }}
+                  </li>
+                {%- endfor -%}
+              </ul>
+            </div>
+          {%- endif -%}
+        </div>
+      </div>
+      <div
+        class="footer__content-bottom-wrapper page-width{% if section.settings.enable_country_selector == false and section.settings.enable_language_selector == false %} footer__content-bottom-wrapper--center{% endif %}"
+        style="display: flex; justify-content: space-between; align-items: center;"
+      >
+        {% if section.settings.show_footer_copyright %}
+          <div class="footer__copyright caption">
+            <small class="copyright__content"
+              >&copy; {{ 'now' | date: '%Y' }}, {{ shop.name | link_to: routes.root_url -}}
+            </small>
+            {% if section.settings.show_powered_by_link %}
+              <small class="copyright__content">{{ powered_by_link }}</small>
+            {% endif %}
+            {%- if section.settings.show_policy -%}
+              <ul class="policies list-unstyled">
+                {%- for policy in shop.policies -%}
+                  {%- if policy != blank -%}
+                    <li>
+                      <small class="copyright__content"
+                        ><a href="{{ policy.url }}">{{ policy.title | escape }}</a></small
+                      >
+                    </li>
+                  {%- endif -%}
+                {%- endfor -%}
+              </ul>
+            {%- endif -%}
+          </div>
+        {% endif %}
+        <div class="footer__bottom-extra">
+          {% if section.settings.bottom_richtext != blank %}
+            <div
+              class="footer__bottom-richtext rte"
+              style="{% if section.settings.bottom_richtext_font_size %}font-size: {{ section.settings.bottom_richtext_font_size }};{% endif %}"
+            >
+              {{ section.settings.bottom_richtext }}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  {% endif %}
 </footer>
 
 {% schema %}
@@ -847,6 +920,16 @@
       "id": "show_powered_by_link",
       "label": "Show powered by link",
       "default": true
+    },
+    {
+      "type": "header",
+      "content": "Override Footer bottom column"
+    },
+    {
+      "type": "checkbox",
+      "id": "override_footer_column_layout",
+      "label": "Override layout",
+      "default": false
     }
   ],
   "default": {

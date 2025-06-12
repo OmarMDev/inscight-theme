@@ -403,3 +403,23 @@ cart-drawer-items::-webkit-scrollbar-track-piece {
     margin-left: 0;
   }
 }
+
+.drawer__inner {
+  background: rgba(0, 0, 0, 0.4) !important;
+  backdrop-filter: blur(5px);
+  border-left: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.cart-drawer * {
+  color: white;
+  text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.7);
+}
+
+a.button {
+  background: white;
+  color: black;
+  font-weight: bold;
+  border-radius: 2.5rem;
+  border: none;
+  box-shadow: ;
+}

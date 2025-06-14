@@ -54,92 +54,6 @@
                   style="--animation-order: {{ forloop.index }};"
                 {% endif %}
               >
-
-
-
-<div class="field">
-<input
-id="NewsletterForm--{{ section.id }}"
-type="text"
-name="contact[first_name]"
-class="field__input"
-value=""
-autocorrect="off"
-autocapitalize="off"
-{% if form.errors %}
-autofocus
-aria-invalid="true"
-aria-describedby="Newsletter-error--{{ section.id }}"
-{% elsif form.posted_successfully? %}
-aria-describedby="Newsletter-success--{{ section.id }}"
-{% endif %}
-placeholder="First name"
-
->
-<label class="field__label" for="NewsletterForm--{{ section.id }}">First Name</label>
-<style>
-#contact_form,
-#ContactFooter,
-#ContactFooter > .newsletter-form__field-wrapper,
-#contact_form > .newsletter-form__field-wrapper{ 
-max-width: 500px;
-width: 100%;
-display: flex;
-gap: 1rem;
-}
-@media (max-width: 749px){
-#ContactFooter > .newsletter-form__field-wrapper,
-#contact_form > .newsletter-form__field-wrapper{ 
-flex-direction: column;
-}  
-}
-</style>
-</div>
-
-
-
-<div class="field">
-<input
-id="NewsletterForm--{{ section.id }}"
-type="text"
-name="contact[last_name]"
-class="field__input"
-value=""
-autocorrect="off"
-autocapitalize="off"
-{% if form.errors %}
-autofocus
-aria-invalid="true"
-aria-describedby="Newsletter-error--{{ section.id }}"
-{% elsif form.posted_successfully? %}
-aria-describedby="Newsletter-success--{{ section.id }}"
-{% endif %}
-placeholder="Last name"
-
->
-<label class="field__label" for="NewsletterForm--{{ section.id }}">Last Name</label>
-<style>
-#contact_form,
-#ContactFooter,
-#ContactFooter > .newsletter-form__field-wrapper,
-#contact_form > .newsletter-form__field-wrapper{ 
-max-width: 500px;
-width: 100%;
-display: flex;
-}
-@media (max-width: 749px){
-#ContactFooter > .newsletter-form__field-wrapper,
-#contact_form > .newsletter-form__field-wrapper{ 
-flex-direction: column;
-}  
-}
-</style>
-</div>
-
-
-
-
-                
                 <div class="field">
                   <input
                     id="NewsletterForm--{{ section.id }}"
@@ -162,7 +76,7 @@ flex-direction: column;
                     required
                   >
                   <label class="field__label" for="NewsletterForm--{{ section.id }}">
-                    {{ 'newsletter.label' | t }}<span style="color: red;">*</span>
+                    {{ 'newsletter.label' | t }}
                   </label>
                   <button
                     type="submit"

@@ -20,7 +20,7 @@
     "spacing_grid_vertical": 8,
     "animations_reveal_on_scroll": true,
     "animations_hover_elements": "none",
-    "buttons_border_thickness": 1,
+    "buttons_border_thickness": 0,
     "buttons_border_opacity": 100,
     "buttons_radius": 0,
     "buttons_shadow_opacity": 0,
@@ -44,14 +44,14 @@
     "card_style": "standard",
     "card_image_padding": 0,
     "card_text_alignment": "left",
-    "card_color_scheme": "scheme-2",
+    "card_color_scheme": "scheme-4",
     "card_border_thickness": 0,
     "card_border_opacity": 10,
     "card_corner_radius": 0,
-    "card_shadow_opacity": 0,
+    "card_shadow_opacity": 50,
     "card_shadow_horizontal_offset": 0,
     "card_shadow_vertical_offset": 4,
-    "card_shadow_blur": 5,
+    "card_shadow_blur": 15,
     "collection_card_style": "standard",
     "collection_card_image_padding": 0,
     "collection_card_text_alignment": "left",
@@ -101,7 +101,7 @@
     "drawer_shadow_horizontal_offset": 0,
     "drawer_shadow_vertical_offset": 4,
     "drawer_shadow_blur": 5,
-    "badge_position": "bottom left",
+    "badge_position": "top left",
     "badge_corner_radius": 40,
     "sale_badge_color_scheme": "scheme-4",
     "sold_out_badge_color_scheme": "scheme-3",
@@ -125,7 +125,7 @@
     "show_vendor": false,
     "show_cart_note": false,
     "cart_drawer_collection": "",
-    "cart_color_scheme": "scheme-1",
+    "cart_color_scheme": "scheme-4",
     "enable_conditional_atc_item": true,
     "atc_item_metaobject_handle": "charger-for-set",
     "enable_cart_progress_bar": true,
@@ -137,8 +137,9 @@
     "goal_1_icon": "shopify://shop_images/lightning-svgrepo-com.svg",
     "goal_1_icon_reached": "shopify://shop_images/lightning-svgrepo-com.svg",
     "enable_goal_2": false,
-    "cart_progress_bar_color": "#333",
-    "cart_progress_bar_full_color": "#000000",
+    "cart_progress_bar_color": "#ffffff",
+    "cart_progress_bar_full_color": "#ffffff",
+    "cart_progress_bar_text_color": "#ffffff",
     "override_header_font": true,
     "custom_header_font_url": "https://cdn.shopify.com/s/files/1/0603/6104/8123/files/SpaceGrotesk_wght.woff2?v=1744195721",
     "override_body_font": true,
@@ -205,13 +206,24 @@
       },
       "scheme-5": {
         "settings": {
-          "background": "#334fb4",
+          "background": "#53b433",
           "background_gradient": "",
           "text": "#ffffff",
           "button": "#ffffff",
-          "button_label": "#334fb4",
+          "button_label": "#ffffff",
           "secondary_button_label": "#ffffff",
-          "shadow": "#121212"
+          "shadow": "#53b433"
+        }
+      },
+      "scheme-542a08a9-90bd-4a89-b34f-4b5d0077c080": {
+        "settings": {
+          "background": "#0046ff",
+          "background_gradient": "",
+          "text": "#ffffff",
+          "button": "#0046ff",
+          "button_label": "#ffffff",
+          "secondary_button_label": "#0046ff",
+          "shadow": "#0046ff"
         }
       }
     }

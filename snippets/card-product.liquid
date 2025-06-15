@@ -28,6 +28,32 @@
   {{ 'quick-order-list.css' | asset_url | stylesheet_tag }}
   {{ 'quantity-popover.css' | asset_url | stylesheet_tag }}
 {%- endunless -%}
+<style>
+  .card__content {
+    position: absolute;
+    bottom: 0;
+    .card__information {
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(5px);
+      border-top: 2px solid rgba(255, 255, 255, 0.2);
+
+      .card__heading,
+      .card-information {
+        margin-left: 0.5rem;
+        text-shadow: 0 0 5px rgba(0, 0, 0, 0.35);
+
+        a::after {
+          min-height: 400%;
+          transform: translateY(-75%);
+        }
+      }
+    }
+
+    .card__badge .badge {
+      box-shadow: 0 0 10px black;
+    }
+  }
+</style>
 {%- if card_product and card_product != empty -%}
   {%- liquid
     assign ratio = 1

@@ -422,3 +422,16 @@ a.button {
   border-radius: 2.5rem;
   border: none;
 }
+
+img.cart-item__image {
+  filter: drop-shadow(0 0 5px white);
+}
+
+cart-drawer-items {
+  overflow: visible;
+}
+
+quantity-input.quantity.cart-quantity,
+quantity-input.quantity.cart-quantity:before {
+  background: rgba(0, 0, 0, 0.05);
+}

@@ -36,26 +36,39 @@
       background: rgba(255, 255, 255, 0.25);
       backdrop-filter: blur(5px);
       border-top: 2px solid rgba(255, 255, 255, 0.2);
-      opacity: 0;
-
-      &:hover {
-        opacity: 1;
-      }
 
       .card__heading,
       .card-information {
         margin-left: 0.5rem;
         text-shadow: 0 0 5px rgba(0, 0, 0, 0.35);
-
-        a::after {
-          min-height: 400%;
-          transform: translateY(-75%);
-        }
       }
     }
 
     .card__badge .badge {
       box-shadow: 0 0 10px black;
+    }
+  }
+  .card-wrapper {
+    .card__information {
+      transition: opacity 0.3s ease-in-out;
+
+      opacity: 0;
+    }
+    &:hover .card__information {
+      opacity: 1;
+    }
+
+    .wrapper-link {
+      display: block !important;
+      &::after {
+        bottom: 0;
+        content: '';
+        left: 0;
+        position: absolute;
+        right: 0;
+        top: 0;
+        z-index: 1;
+      }
     }
   }
 </style>
@@ -72,6 +85,10 @@
     endif
   -%}
   <div class="card-wrapper product-card-wrapper underline-links-hover">
+    <a
+      href="{{ card_product.url }}"
+      class="full-unstyled-link wrapper-link"
+    ></a>
     <div
       class="
         card card--{{ settings.card_style }}

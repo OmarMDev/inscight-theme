@@ -11,6 +11,64 @@
   "name": "t:sections.footer.name",
   "type": "footer",
   "sections": {
+    "instagram_reel_carousel_VLj7FC": {
+      "type": "instagram-reel-carousel",
+      "blocks": {
+        "video_block_V6gFXc": {
+          "type": "video_block",
+          "settings": {
+            "video": "shopify://files/videos/VID_20250615_132845_702.mp4"
+          }
+        },
+        "video_block_H9pEWJ": {
+          "type": "video_block",
+          "settings": {
+            "video": "shopify://files/videos/VID_20250615_132505_428.mp4"
+          }
+        },
+        "video_block_RBNPHy": {
+          "type": "video_block",
+          "settings": {
+            "video": "shopify://files/videos/VID_20250615_132809_262.mp4"
+          }
+        },
+        "video_block_FLBaAx": {
+          "type": "video_block",
+          "settings": {
+            "video": "shopify://files/videos/VID_20250615_132511_053.mp4"
+          }
+        },
+        "video_block_qyDkwe": {
+          "type": "video_block",
+          "settings": {
+            "video": "shopify://files/videos/VID_20250615_132505_428.mp4"
+          }
+        },
+        "video_block_946RhM": {
+          "type": "video_block",
+          "settings": {
+            "video": "shopify://files/videos/VID_20250615_132747_903.mp4"
+          }
+        },
+        "video_block_67xUMg": {
+          "type": "video_block",
+          "settings": {
+            "video": "shopify://files/videos/VID_20250615_132809_262.mp4"
+          }
+        }
+      },
+      "block_order": [
+        "video_block_V6gFXc",
+        "video_block_H9pEWJ",
+        "video_block_RBNPHy",
+        "video_block_FLBaAx",
+        "video_block_qyDkwe",
+        "video_block_946RhM",
+        "video_block_67xUMg"
+      ],
+      "name": "Swiper Example",
+      "settings": {}
+    },
     "newsletter_8mxd3Q": {
       "type": "newsletter",
       "blocks": {
@@ -32,7 +90,11 @@
           "settings": {}
         }
       },
-      "block_order": ["heading_9BhEQM", "paragraph_XRKHYY", "email_form_gXP8pG"],
+      "block_order": [
+        "heading_9BhEQM",
+        "paragraph_XRKHYY",
+        "email_form_gXP8pG"
+      ],
       "name": "t:sections.newsletter.presets.name",
       "settings": {
         "color_scheme": "",
@@ -99,7 +161,12 @@
           }
         }
       },
-      "block_order": ["link_list_4FBzcC", "link_list_XkX8KN", "link_list_3d884a", "image_link_j7YpXM"],
+      "block_order": [
+        "link_list_4FBzcC",
+        "link_list_XkX8KN",
+        "link_list_3d884a",
+        "image_link_j7YpXM"
+      ],
       "settings": {
         "color_scheme": "scheme-1",
         "newsletter_enable": false,
@@ -120,9 +187,14 @@
         "bottom_richtext": "<p>Share contact information, store details, and brand content with your customers.</p>",
         "bottom_richtext_font_size": "1rem",
         "show_footer_copyright": true,
-        "show_powered_by_link": true
+        "show_powered_by_link": true,
+        "override_footer_column_layout": false
       }
     }
   },
-  "order": ["newsletter_8mxd3Q", "footer"]
+  "order": [
+    "instagram_reel_carousel_VLj7FC",
+    "newsletter_8mxd3Q",
+    "footer"
+  ]
 }

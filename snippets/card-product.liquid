@@ -46,30 +46,29 @@
 
     .card__badge .badge {
       box-shadow: 0 0 10px black;
+      text-shadow: 0 0 4px white;
     }
   }
+
   .card-wrapper {
     .card__information {
       transition: opacity 0.3s ease-in-out;
-
       opacity: 0;
     }
+
     &:hover .card__information {
       opacity: 1;
     }
-
-    .wrapper-link {
-      display: block !important;
-      &::after {
-        bottom: 0;
-        content: '';
-        left: 0;
-        position: absolute;
-        right: 0;
-        top: 0;
-        z-index: 1;
-      }
-    }
+  }
+  .wrapper-link {
+    display: block !important;
+    bottom: 0;
+    content: '';
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 1;
   }
 </style>
 {%- if card_product and card_product != empty -%}

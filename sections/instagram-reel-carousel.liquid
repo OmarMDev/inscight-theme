@@ -1,0 +1,382 @@
+{% comment %}
+  Section for a Swiper carousel
+{% endcomment %}
+
+{{ 'swiper-bundle.min.css' | asset_url | stylesheet_tag }}
+
+<style>
+  .swiper {
+    width: 100%;
+    height: 50vh;
+    opacity: 0.8;
+    transition: opacity 0.2s ease;
+    &:hover {
+      opacity: 1;
+    }
+
+    .swiper-slide {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      video {
+        height: 100%;
+        width: auto;
+        border-radius: 1.5rem;
+      }
+    }
+  }
+
+  .swiper-pagination-bullet-active {
+    background: rgba(255, 255, 255, 0.5);
+  }
+
+  /* Modal Styles */
+  .video-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    animation: fadeIn 0.3s ease;
+  }
+
+  .video-modal.active {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .modal-content {
+    position: relative;
+    max-width: 90vw;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .modal-video {
+    max-width: 100%;
+    max-height: 80vh;
+    border-radius: 1rem;
+    object-fit: contain;
+  }
+
+  .video-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1rem;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 2rem;
+    backdrop-filter: blur(10px);
+  }
+
+  .control-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    transition: all 0.2s ease;
+  }
+
+  .control-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+  }
+
+  .close-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.7);
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    color: white;
+    cursor: pointer;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+  }
+
+  .close-btn:hover {
+    background: rgba(0, 0, 0, 0.9);
+    transform: scale(1.1);
+  }
+
+  .progress-container {
+    width: 200px;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+    overflow: hidden;
+    cursor: pointer;
+  }
+
+  .progress-bar {
+    height: 100%;
+    background: #fff;
+    width: 0%;
+    transition: width 0.1s ease;
+    border-radius: 3px;
+  }
+
+  .time-display {
+    color: white;
+    font-size: 0.9rem;
+    min-width: 80px;
+    text-align: center;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* Mobile responsive */
+  @media (max-width: 768px) {
+    .modal-video {
+      max-height: 70vh;
+    }
+
+    .video-controls {
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      padding: 0.5rem;
+    }
+
+    .control-btn {
+      width: 40px;
+      height: 40px;
+      font-size: 1rem;
+    }
+
+    .progress-container {
+      width: 150px;
+    }
+  }
+</style>
+
+<!-- Slider main container -->
+<div class="swiper">
+  <!-- Additional required wrapper -->
+  <div class="swiper-wrapper">
+    <!-- Slides -->
+    {% for block in section.blocks %}
+      <div class="swiper-slide">
+        {% if block.settings.video %}
+          {{
+            block.settings.video
+            | video_tag:
+              controls: false,
+              autoplay: true,
+              loop: true,
+              class: 'carousel-video',
+              data-video-src: block.settings.video.sources[0].url
+          }}
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+  <!-- If we need pagination -->
+  <div class="swiper-pagination"></div>
+
+  <!-- If we need navigation buttons -->
+  <div class="swiper-button-prev"></div>
+  <div class="swiper-button-next"></div>
+</div>
+<div class="video-modal" id="videoModal">
+  <button class="close-btn" id="closeModal">&times;</button>
+  <div class="modal-content">
+    <video class="modal-video" id="modalVideo" loop>Your browser does not support the video tag.</video>
+    <div class="video-controls">
+      <button class="control-btn" id="muteBtn">
+        <span id="muteIcon">🔊</span>
+      </button>
+      <div class="time-display" id="timeDisplay">0:00 / 0:00</div>
+      <div class="progress-container" id="progressContainer">
+        <div class="progress-bar" id="progressBar">&nbsp;</div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="{{ 'swiper-bundle.min.js' | asset_url }}" defer></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const swiper = new Swiper('.swiper', {
+      effect: 'coverflow',
+      coverflowEffect: {
+        rotate: 0,
+        depth: 50,
+      },
+      loop: true,
+      allowTouchMove: true,
+
+      // If we need pagination
+      pagination: {
+        el: '.swiper-pagination',
+        clickable: 'true',
+      },
+
+      // Navigation arrows
+      navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+      },
+      slidesPerView: 5,
+    });
+
+    // Modal functionality
+    const modal = document.getElementById('videoModal');
+    const modalVideo = document.getElementById('modalVideo');
+    const closeBtn = document.getElementById('closeModal');
+    const muteBtn = document.getElementById('muteBtn');
+    const muteIcon = document.getElementById('muteIcon');
+    const progressContainer = document.getElementById('progressContainer');
+    const progressBar = document.getElementById('progressBar');
+    const timeDisplay = document.getElementById('timeDisplay');
+
+    // Add click event to all carousel videos
+    document.querySelectorAll('.carousel-video').forEach((video) => {
+      video.addEventListener('click', function () {
+        let videoSourceElement = video.querySelector('source');
+        openModal(videoSourceElement.src);
+      });
+    });
+
+    function openModal(videoSrc) {
+      modalVideo.src = videoSrc;
+      modalVideo.type = 'video/mp4';
+      modalVideo.muted = false; // Start unmuted in modal
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden'; // Prevent background scrolling
+      modalVideo.load();
+      modalVideo.play();
+      updateMuteIcon();
+    }
+
+    function closeModal() {
+      modal.classList.remove('active');
+      modalVideo.pause();
+      modalVideo.src = '';
+      document.body.style.overflow = ''; // Restore scrolling
+    }
+
+    function toggleMute() {
+      modalVideo.muted = !modalVideo.muted;
+      updateMuteIcon();
+    }
+
+    function updateMuteIcon() {
+      muteIcon.textContent = modalVideo.muted ? '🔇' : '🔊';
+    }
+
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${mins}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    function updateProgress() {
+      if (modalVideo.duration) {
+        const progress = (modalVideo.currentTime / modalVideo.duration) * 100;
+        progressBar.style.width = progress + '%';
+
+        const currentTime = formatTime(modalVideo.currentTime);
+        const duration = formatTime(modalVideo.duration);
+        timeDisplay.textContent = `${currentTime} / ${duration}`;
+      }
+    }
+
+    function seekVideo(e) {
+      const rect = progressContainer.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const containerWidth = rect.width;
+      const percentage = clickX / containerWidth;
+
+      if (modalVideo.duration) {
+        modalVideo.currentTime = percentage * modalVideo.duration;
+      }
+    }
+
+    // Event listeners
+    closeBtn.addEventListener('click', closeModal);
+    muteBtn.addEventListener('click', toggleMute);
+    progressContainer.addEventListener('click', seekVideo);
+
+    // Close modal when clicking outside video
+    modal.addEventListener('click', function (e) {
+      if (e.target === modal) {
+        closeModal();
+      }
+    });
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && modal.classList.contains('active')) {
+        closeModal();
+      }
+    });
+
+    // Update progress bar
+    modalVideo.addEventListener('timeupdate', updateProgress);
+
+    // Handle video load
+    modalVideo.addEventListener('loadedmetadata', function () {
+      updateProgress();
+    });
+
+    // Auto-play when video loads
+    modalVideo.addEventListener('canplay', function () {
+      if (modal.classList.contains('active')) {
+        modalVideo.play();
+      }
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "My Swiper Section",
+  "settings": [],
+  "blocks": [
+    {
+      "name": "Reel",
+      "type": "video_block",
+      "settings": [
+        {
+          "type": "video",
+          "id": "video",
+          "label": "A Shopify-hosted video"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Swiper Example"
+    }
+  ]
+}
+{% endschema %}

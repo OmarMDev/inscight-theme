@@ -6,45 +6,59 @@
 {{ 'component-list-social.css' | asset_url | stylesheet_tag }}
 
 {%- style -%}
-  .footer {
-    margin-top: {{ section.settings.margin_top | times: 0.75 | round: 0 }}px;
-    margin-bottom: {{ section.settings.margin_bottom | times: 0.75 | round: 0 | default: 0 }}px;
-    margin-left: {{ section.settings.margin_left | times: 0.75 | round: 0 | default: 0 }}px;
-    margin-right: {{ section.settings.margin_right | times: 0.75 | round: 0 | default: 0 }}px;
-    {% if section.settings.border_radius %}
-      border-radius: {{ section.settings.border_radius }};
-    {% endif %}
-  }
-
-  .section-{{ section.id }}-padding {
-    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
-    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
-  }
-
-  @media screen and (min-width: 750px) {
     .footer {
-      margin-top: {{ section.settings.margin_top }}px;
-      margin-bottom: {{ section.settings.margin_bottom | default: 0 }}px;
-      margin-left: {{ section.settings.margin_left | default: 0 }}px;
-      margin-right: {{ section.settings.margin_right | default: 0 }}px;
+      margin-top: {{ section.settings.margin_top | times: 0.75 | round: 0 }}px;
+      margin-bottom: {{ section.settings.margin_bottom | times: 0.75 | round: 0 | default: 0 }}px;
+      margin-left: {{ section.settings.margin_left | times: 0.75 | round: 0 | default: 0 }}px;
+      margin-right: {{ section.settings.margin_right | times: 0.75 | round: 0 | default: 0 }}px;
       {% if section.settings.border_radius %}
         border-radius: {{ section.settings.border_radius }};
       {% endif %}
     }
+
     .section-{{ section.id }}-padding {
-      padding-top: {{ section.settings.padding_top }}px;
-      padding-bottom: {{ section.settings.padding_bottom }}px;
+      padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+      padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
     }
-  }
-  @media screen and (max-width: 749px) {
-    .footer-block.grid__item.footer-block--menu {
-      margin: 0;
-      padding: 1rem 0;
-      border-bottom: 1px solid black;
+
+    @media screen and (min-width: 750px) {
+      .footer {
+        margin-top: {{ section.settings.margin_top }}px;
+        margin-bottom: {{ section.settings.margin_bottom | default: 0 }}px;
+        margin-left: {{ section.settings.margin_left | default: 0 }}px;
+        margin-right: {{ section.settings.margin_right | default: 0 }}px;
+        {% if section.settings.border_radius %}
+          border-radius: {{ section.settings.border_radius }};
+        {% endif %}
+      }
+      .section-{{ section.id }}-padding {
+        padding-top: {{ section.settings.padding_top }}px;
+        padding-bottom: {{ section.settings.padding_bottom }}px;
+      }
     }
-    .footer-block.grid__item.footer-block--menu:first-child {    padding: 1rem 0;
-      border-top: 1px solid black;
+    @media screen and (max-width: 749px) {
+      .footer-block.grid__item.footer-block--menu {
+        margin: 0;
+        padding: 1rem 0;
+        border-bottom: 1px solid white;
+      }
+      .footer-block.grid__item.footer-block--menu:first-child {    padding: 1rem 0;
+        border-top: 1px solid white;
+      }
     }
+
+    footer.footer.color-scheme-4.gradient {
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(5px);
+
+      span, a, h2 {
+          text-shadow: 0 0 5px white;
+      }
+
+      .footer-block__image-wrapper {
+          box-shadow: 0 0 3rem rgba(255,255,255, 0.3);
+      }
+
   }
 {%- endstyle -%}
 
@@ -513,7 +527,7 @@
               >&copy; {{ 'now' | date: '%Y' }}, {{ shop.name | link_to: routes.root_url -}}
             </small>
             {% if section.settings.show_powered_by_link %}
-              <small class="copyright__content">{{ powered_by_link }}</small>
+              <small class="copyright__content"> <a href="http://omarmdev.github.io">Omar M Dev.</a> </small>
             {% endif %}
             {%- if section.settings.show_policy -%}
               <ul class="policies list-unstyled">

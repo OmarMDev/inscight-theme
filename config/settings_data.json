@@ -131,7 +131,7 @@
     "enable_cart_progress_bar": true,
     "show_progress_bar_icons": true,
     "progress_bar_basis": "item_price",
-    "goal_1_pre_goal_message": "Free charger for Bulb, Speaker and Plug",
+    "goal_1_pre_goal_message": "Free charger for Orders Over $100",
     "goal_1_post_goal_message": "Free charger unlocked!",
     "goal_1_description": "",
     "enable_goal_2": false,

@@ -3563,3 +3563,70 @@ details-disclosure > details {
     transform: translateX(100%) scaleX(0);
   }
 }
+
+.glassmorphic-button {
+  /* Glassmorphic background */
+  background: rgba(214, 214, 214, 0.3);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  /* Border with gradient */
+  border: 1.16px solid transparent;
+  background-clip: padding-box;
+  position: relative;
+
+  font-size: 18px;
+  font-weight: 500;
+  color: #1f2a37;
+
+  /* Layout */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+
+  /* Interaction states */
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  /* Multi-layer drop shadow to match Figma */
+  box-shadow: 0 9.88px 11.04px rgba(0, 0, 0, 0.1), 0 40.1px 20.05px rgba(0, 0, 0, 0.09), 0 90.67px 27.32px rgba(0, 0, 0, 0.05), 0 161px 32.26px rgba(0, 0, 0, 0.01);
+}
+
+/* Gradient border effect */
+.glassmorphic-button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.16px;
+  background: linear-gradient(180deg, #f2f2f2 0%, #818181 41.42%, #ffffff 100%);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: xor;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+}
+
+/* Hover state */
+.glassmorphic-button:hover {
+  background: rgba(214, 214, 214, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 14px rgba(0, 0, 0, 0.12), 0 48px 24px rgba(0, 0, 0, 0.11), 0 108px 32px rgba(0, 0, 0, 0.07), 0 192px 38px rgba(0, 0, 0, 0.02);
+}
+
+/* Active state */
+.glassmorphic-button:active {
+  transform: translateY(0);
+  background: rgba(214, 214, 214, 0.5);
+}
+
+/* Icon styling (if you want to include the sparkle icon) */
+.glassmorphic-button .icon {
+  width: 28px;
+  height: 28px;
+  stroke: #1f2a37;
+  stroke-width: 1.75px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}

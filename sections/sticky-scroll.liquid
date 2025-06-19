@@ -1,0 +1,463 @@
+<style>
+  .product-highlight-section {
+    display: flex;
+    min-height: 100vh;
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+  }
+
+  /* Left side - Sticky product image */
+  .product-image-container {
+    flex: 1;
+    position: sticky;
+    top: 0;
+    height: 120vh;
+    overflow: hidden;
+    backdrop-filter: blur(15px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .product-image {
+    width: 80%;
+    aspect-ratio: 1;
+    object-fit: contain;
+    height: auto;
+    box-shadow: rgba(18, 18, 18, 0.5) 0px 4px 15px 0px;
+    object-fit: contain;
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+
+  .product-image.fade-out {
+    opacity: 0;
+    transform: scale(0.8) rotate(-5deg);
+  }
+
+  .product-image.fade-in {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+
+  /* Right side - Scrolling content */
+  .product-content-container {
+    flex: 1;
+    padding: 60px 40px;
+  }
+
+  .product-section {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 40px 0;
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+    margin-bottom: 50vh;
+    &:first-of-type {
+      margin-top: 100vh;
+    }
+  }
+
+  .product-section.active {
+    opacity: 1;
+  }
+
+  .product-section h2 {
+    font-weight: 700;
+    margin-bottom: 20px;
+    line-height: 1.2;
+  }
+
+  .product-section .price {
+    font-weight: 600;
+    margin-bottom: 30px;
+  }
+
+  .product-section p {
+    color: #666;
+    margin-bottom: 20px;
+    line-height: 1.8;
+  }
+
+  .features-list {
+    list-style: none;
+    margin: 30px 0;
+  }
+
+  .features-list li {
+    padding: 8px 0;
+    color: #555;
+    position: relative;
+    padding-left: 25px;
+  }
+
+  .features-list li:before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: #27ae60;
+    font-weight: bold;
+  }
+
+  .cta-button {
+    display: inline-block;
+    padding: 15px 30px;
+    border-radius: 30px;
+    font-weight: 600;
+    margin-top: 30px;
+    text-decoration: none;
+    text-align: center;
+    color: rgba(0, 0, 0, 0.7);
+  }
+
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .product-highlight-section {
+      flex-direction: column;
+    }
+
+    .product-image-container {
+      position: relative;
+      height: 50vh;
+      flex: none;
+    }
+
+    .product-content-container {
+      padding: 30px 20px;
+    }
+
+    .product-section {
+      min-height: auto;
+      padding: 30px 0;
+    }
+  }
+
+  /* Loading placeholder for images */
+  .image-placeholder {
+    width: 80%;
+    aspect-ratio: 1;
+    object-fit: contain;
+    height: auto;
+    box-shadow: rgba(18, 18, 18, 0.5) 0px 4px 15px 0px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.7);
+  }
+</style>
+<div class="product-highlight-section">
+  <!-- Left side - Sticky product image -->
+  <div class="product-image-container">
+    {% # theme-check-disable %}
+    <img
+      src="{{ section.settings.image_1 | image_url: width: 600, height:600 }}"
+      alt="Wireless Headphones"
+      class="product-image"
+      id="productImage"
+    >
+    {% # theme-check-enable %}
+  </div>
+
+  <!-- Right side - Scrolling content -->
+  <div class="product-content-container">
+    <!-- Product 1 -->
+    <div
+      class="product-section active"
+      data-product="1"
+      data-image="{{ section.settings.image_1 | image_url: width: 600, height:600 }}"
+    >
+      <h2>Universal Wireless Charger</h2>
+      <div class="price">$149.99</div>
+      <p>
+        Experience lightning-fast charging with our Universal Wireless Charger. Compatible with all of our products,
+        this charger delivers an impressive 120W charge in record time.
+      </p>
+      <p>
+        Never again worry about a dead battery - stay powered up and connected wherever you go. Our advanced charging
+        technology ensures optimal power delivery while protecting your devices.
+      </p>
+
+      <ul class="features-list">
+        <li>120W ultra-fast wireless charging</li>
+        <li>Universal compatibility with all our products</li>
+        <li>Advanced safety protection features</li>
+        <li>Compact and portable design</li>
+        <li>LED charging status indicator</li>
+      </ul>
+
+      <a href="{{ section.settings.link_1 }}" class="cta-button glassmorphic-button">Shop Now</a>
+    </div>
+
+    <!-- Product 2 -->
+    <div
+      class="product-section"
+      data-product="2"
+      data-image="{{ section.settings.image_2 | image_url: width: 600, height:600 }}"
+    >
+      <h2>Smart Speaker</h2>
+      <div class="price">$199.99</div>
+      <p>
+        Introducing our wireless smart speaker, the perfect addition to your home audio system. Enjoy the convenience of
+        wireless connectivity and the latest in smart technology.
+      </p>
+      <p>
+        Experience crystal clear sound and effortless control with our expertly designed speaker. Upgrade your listening
+        experience today with premium audio quality and intelligent features.
+      </p>
+
+      <ul class="features-list">
+        <li>Crystal clear high-fidelity audio</li>
+        <li>Wireless connectivity and smart integration</li>
+        <li>Voice control and smart home compatibility</li>
+        <li>Premium acoustic engineering</li>
+        <li>Sleek design that complements any space</li>
+      </ul>
+
+      <a href="{{ section.settings.link_2 }}" class="glassmorphic-button cta-button">Shop Now</a>
+    </div>
+
+    <!-- Product 3 -->
+    <div
+      class="product-section"
+      data-product="3"
+      data-image="{{ section.settings.image_3 | image_url: width: 600, height:600 }}"
+    >
+      <h2>Smart Plug</h2>
+      <div class="price">$39.99</div>
+      <p>
+        Our Smart Plug utilizes context awareness to save energy and optimize your lifestyle. Programmable and
+        efficient, it allows for seamless integration into your daily routine.
+      </p>
+      <p>
+        Reduce your environmental impact and save money with this essential smart home device. Monitor and control your
+        appliances remotely while maximizing energy efficiency.
+      </p>
+
+      <ul class="features-list">
+        <li>Context-aware energy optimization</li>
+        <li>Programmable scheduling capabilities</li>
+        <li>Remote control via smartphone app</li>
+        <li>Energy monitoring and usage reports</li>
+        <li>Easy installation and setup</li>
+      </ul>
+
+      <a href="{{ section.settings.link_3 }}" class="cta-button glassmorphic-button">Shop Now</a>
+    </div>
+
+    <!-- Product 4 -->
+    <div
+      class="product-section"
+      data-product="4"
+      data-image="{{ section.settings.image_4 | image_url: width: 600, height:600 }}"
+    >
+      <h2>Smart Bulb</h2>
+      <div class="price">$29.99</div>
+      <p>
+        Experience the future of lighting with our Smart Bulb. With adjustable lighting, you can customize the ambiance
+        to your liking while enjoying energy-efficient LED technology.
+      </p>
+      <p>
+        The context aware LED adapts to different situations, providing optimal lighting. Plus, with programmable
+        capabilities, you have complete control over your lighting experience.
+      </p>
+
+      <ul class="features-list">
+        <li>Adjustable brightness and color temperature</li>
+        <li>Context-aware adaptive lighting</li>
+        <li>Programmable scheduling and automation</li>
+        <li>Energy-efficient LED technology</li>
+        <li>Smart home integration and app control</li>
+      </ul>
+
+      <a href="{{ section.settings.link_4 }}" class="cta-button glassmorphic-button">Shop Now</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  class ProductHighlight {
+    constructor() {
+      this.productImage = document.getElementById('productImage');
+      this.productSections = document.querySelectorAll('.product-section');
+      this.currentProduct = 1;
+      this.isAnimating = false;
+
+      this.init();
+    }
+
+    init() {
+      this.setupIntersectionObserver();
+      this.preloadImages();
+    }
+
+    setupIntersectionObserver() {
+      const options = {
+        root: null,
+        rootMargin: '-20% 0px -20% 0px',
+        threshold: 0.0,
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const productNumber = parseInt(entry.target.dataset.product);
+            const newImageSrc = entry.target.dataset.image;
+
+            // Update active section
+            this.updateActiveSection(entry.target);
+
+            // Change product image if different
+            if (productNumber !== this.currentProduct) {
+              this.changeProductImage(newImageSrc, productNumber);
+            }
+          }
+        });
+      }, options);
+
+      this.productSections.forEach((section) => {
+        observer.observe(section);
+      });
+    }
+
+    updateActiveSection(activeSection) {
+      this.productSections.forEach((section) => {
+        section.classList.remove('active');
+      });
+      activeSection.classList.add('active');
+    }
+
+    changeProductImage(newImageSrc, productNumber) {
+      if (this.isAnimating) return;
+
+      this.isAnimating = true;
+      this.currentProduct = productNumber;
+
+      // Fade out current image
+      this.productImage.classList.add('fade-out');
+
+      setTimeout(() => {
+        // Change image source
+        this.productImage.src = newImageSrc;
+
+        // Wait for image to load
+        this.productImage.onload = () => {
+          // Fade in new image
+          this.productImage.classList.remove('fade-out');
+          this.productImage.classList.add('fade-in');
+
+          setTimeout(() => {
+            this.productImage.classList.remove('fade-in');
+            this.isAnimating = false;
+          }, 100);
+        };
+
+        // Handle image load error
+        this.productImage.onerror = () => {
+          console.error('Failed to load image:', newImageSrc);
+          this.productImage.classList.remove('fade-out');
+          this.isAnimating = false;
+        };
+      }, 400);
+    }
+
+    preloadImages() {
+      this.productSections.forEach((section) => {
+        const img = new Image();
+        img.src = section.dataset.image;
+      });
+    }
+  }
+
+  // Initialize when DOM is loaded
+  document.addEventListener('DOMContentLoaded', () => {
+    new ProductHighlight();
+  });
+
+  // Handle smooth scrolling for CTA buttons (optional enhancement)
+  document.querySelectorAll('.cta-button').forEach((button) => {
+    button.addEventListener('click', (e) => {
+      // Add your product page navigation or cart functionality here
+      console.log('Product CTA clicked');
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Sticky Scroll Section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Sticky Scroll Section"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_1",
+      "label": "Image 1"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_2",
+      "label": "Image 2"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_3",
+      "label": "Image 3"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_4",
+      "label": "Image 4"
+    },
+    {
+      "type": "url",
+      "id": "link_1",
+      "label": "Link 1"
+    },
+    {
+      "type": "url",
+      "id": "link_2",
+      "label": "Link 2"
+    },
+    {
+      "type": "url",
+      "id": "link_3",
+      "label": "Link 3"
+    },
+    {
+      "type": "url",
+      "id": "link_4",
+      "label": "Link 4"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "item_text",
+          "label": "Item Text",
+          "default": "Sample item"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 5,
+  "presets": [
+    {
+      "name": "Sticky Scroll"
+    }
+  ]
+}
+{% endschema %}

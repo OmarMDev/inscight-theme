@@ -90,7 +90,7 @@
           "type": "link_list",
           "settings": {
             "heading": "Policies",
-            "menu": "menu-one",
+            "menu": "legal-information",
             "li_padding_top": "0rem",
             "li_padding_bottom": "0.5rem",
             "link_font_size": "auto",
@@ -104,7 +104,7 @@
           "type": "link_list",
           "settings": {
             "heading": "Quick links",
-            "menu": "customer-account-main-menu",
+            "menu": "footer",
             "li_padding_top": "0.5rem",
             "li_padding_bottom": "0.5rem",
             "link_font_size": "auto",
@@ -154,7 +154,7 @@
         "bottom_richtext_font_size": "1rem",
         "show_footer_copyright": true,
         "show_powered_by_link": true,
-        "override_footer_column_layout": false
+        "override_footer_column_layout": true
       }
     }
   },

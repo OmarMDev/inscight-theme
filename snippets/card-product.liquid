@@ -30,12 +30,20 @@
 {%- endunless -%}
 <style>
   .card__content {
-    position: absolute;
-    bottom: 0;
+    @media screen and (width > 450px) {
+      position: absolute;
+      bottom: 0;
+    }
+
     .card__information {
       background: rgba(255, 255, 255, 0.25);
       backdrop-filter: blur(5px);
       border-top: 2px solid rgba(255, 255, 255, 0.2);
+
+      @media screen and (width < 450px) {
+        background: rgba(0, 0, 0, 0.1);
+        border-top: 7px rgba(255, 255, 255, 0.5) solid;
+      }
 
       .card__heading,
       .card-information {
@@ -82,7 +90,7 @@
     top: 0;
     left: calc(100% - 42px) !important;
     @media screen and (width < 990px) {
-      transform: translateX(-15px);
+      transform: translateX(0);
     }
     z-index: 10;
     .custom-quick-add {

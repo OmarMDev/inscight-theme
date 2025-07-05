@@ -25,7 +25,9 @@
     },
     "header": {
       "type": "header",
-      "custom_css": [],
+      "custom_css": [
+        "sticky-header.header-wrapper.color-scheme-1 {border-bottom: rgba(0, 0, 0, 0) 1px solid;}"
+      ],
       "settings": {
         "logo_position": "middle-left",
         "mobile_logo_position": "center",

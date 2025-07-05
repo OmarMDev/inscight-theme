@@ -38,6 +38,14 @@
           "type": "quantity_selector",
           "settings": {}
         },
+        "checkbox_upsell_pjq6iN": {
+          "type": "checkbox_upsell",
+          "settings": {
+            "checkbox_upsell_product": "shipping-protection",
+            "checkbox_upsell_text": "Protected shipping",
+            "checkbox_upsell_default": true
+          }
+        },
         "buy_buttons": {
           "type": "buy_buttons",
           "settings": {
@@ -85,14 +93,6 @@
           "settings": {
             "share_label": "Share"
           }
-        },
-        "checkbox_upsell_pjq6iN": {
-          "type": "checkbox_upsell",
-          "settings": {
-            "checkbox_upsell_product": "shipping-protection",
-            "checkbox_upsell_text": "Protected shipping",
-            "checkbox_upsell_default": true
-          }
         }
       },
       "block_order": [
@@ -101,13 +101,13 @@
         "price",
         "variant_picker",
         "quantity_selector",
+        "checkbox_upsell_pjq6iN",
         "buy_buttons",
         "icon_with_text_t98UzP",
         "collapsible_tab_CFdPE9",
         "collapsible_tab_pPGyDd",
         "description",
-        "share",
-        "checkbox_upsell_pjq6iN"
+        "share"
       ],
       "custom_css": [],
       "settings": {

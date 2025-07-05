@@ -26,7 +26,7 @@
     "header": {
       "type": "header",
       "custom_css": [
-        "sticky-header.header-wrapper.color-scheme-1 {border-bottom: rgba(0, 0, 0, 0) 1px solid;}"
+        "sticky-header.header-wrapper.color-scheme-1:not(:hover) {border-bottom: rgba(0, 0, 0, 0) 1px solid;}"
       ],
       "settings": {
         "logo_position": "middle-left",

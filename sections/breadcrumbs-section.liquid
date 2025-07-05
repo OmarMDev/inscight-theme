@@ -1,6 +1,483 @@
-{% schema %}
-  {
-    "name": "Section name",
-    "settings": []
+{% style %}
+  /* Basic Breadcrumbs Styling */
+  .breadcrumbs-section {
+    background-color: rgba({{ section.settings.background_color.red }}, {{ section.settings.background_color.green }}, {{ section.settings.background_color.blue }}, {{ section.settings.background_opacity | divided_by: 100.0 }});
+    padding-top: {{ section.settings.breadcrumbs_section_padding_top }}px;
+    padding-bottom: {{ section.settings.breadcrumbs_section_padding_bottom }}px;
+    {% if section.settings.show_top_separator %}
+      border-top: {{ section.settings.top_separator_thickness }}px {{ section.settings.top_separator_style }} {{ section.settings.top_separator_color }};
+    {% endif %}
+    {% if section.settings.show_bottom_separator %}
+      border-bottom: {{ section.settings.bottom_separator_thickness }}px {{ section.settings.bottom_separator_style }} {{ section.settings.bottom_separator_color }};
+    {% endif %}
   }
+
+  .breadcrumbs {
+    padding: {{ section.settings.breadcrumbs_vertical_padding }}px 0; /* Vertical spacing */
+    font-size: {{ section.settings.breadcrumbs_font_size }}em;
+    color: {{ section.settings.breadcrumb_color }}; /* Default text color from setting */
+  }
+
+  .breadcrumbs__list {
+    list-style: none; /* Remove default list bullets */
+    padding: 0;
+    margin: 0;
+    display: flex; /* Arrange items in a row */
+    flex-wrap: wrap; /* Allow items to wrap to the next line on small screens */
+    align-items: center; /* Vertically align items */
+  }
+
+  .breadcrumbs__item {
+    display: inline-flex; /* Use inline-flex for better alignment with content */
+    align-items: center; /* Vertically center content within the item */
+    margin-left: {{ section.settings.breadcrumbs_item_horizontal_spacing }}px;
+    margin-right: {{ section.settings.breadcrumbs_item_horizontal_spacing }}px;
+  }
+
+  /* Separator for breadcrumbs */
+  .breadcrumbs__item:not(:last-child)::after {
+    content: '{{ section.settings.separator_choice }}'; /* Separator from setting */
+    margin: 0 8px; /* Spacing around the separator */
+    color: #bbb; /* Lighter color for the separator - kept hardcoded as no setting was specified */
+  }
+
+  .breadcrumbs__link {
+    text-decoration: none; /* Remove underline from links */
+    color: {{ section.settings.breadcrumb_link_color }}; /* Link color from new setting */
+    opacity: 0.9;
+    transition: color 0.2s ease; /* Smooth transition for hover effect */
+  }
+
+  .breadcrumbs__link:hover {
+    color: {{ section.settings.breadcrumb_link_hover_color }}; /* Darker blue on hover from new setting */
+    text-decoration: underline; /* Add underline on hover for clarity */
+  }
+
+  .breadcrumbs__current {
+    color: {{ section.settings.breadcrumb_current_color }}; /* Current page text color from new setting */
+    font-weight: bold; /* Make the current page text bold */
+  }
+
+  /* Optional: Adjustments for smaller screens */
+  @media (max-width: 768px) {
+    .breadcrumbs {
+      padding: 8px 0;
+      font-size: 0.85em;
+    }
+    .breadcrumbs__item:not(:last-child)::after {
+      margin: 0 6px;
+    }
+  }
+{% endstyle %}
+<section class="breadcrumbs-section page-width">
+  <nav class="breadcrumbs" role="navigation" aria-label="breadcrumbs">
+    <ol class="breadcrumbs__list">
+      {% if section.settings.show_home_link %}
+        <li class="breadcrumbs__item">
+          <a href="/" class="breadcrumbs__link">Home</a>
+        </li>
+      {% endif %}
+
+      {% if template contains 'product' %}
+        {% assign breadcrumbs_list = product.metafields.custom.breadcrumbs_collection_list.value %}
+        {% if breadcrumbs_list != blank %}
+          {% for item in breadcrumbs_list %}
+            <li class="breadcrumbs__item">
+              <a href="{{ item.url }}" class="breadcrumbs__link">{{ item.title }}</a>
+            </li>
+          {% endfor %}
+        {% endif %}
+        <li class="breadcrumbs__item">
+          <span class="breadcrumbs__current" aria-current="page">{{ product.title }}</span>
+        </li>
+
+      {% elsif template contains 'collection' %}
+        {% assign breadcrumbs_list = collection.metafields.custom.breadcrumbs_collection_list.value %}
+        {% if breadcrumbs_list != blank %}
+          {% for item in breadcrumbs_list %}
+            <li class="breadcrumbs__item">
+              <a href="{{ item.url }}" class="breadcrumbs__link">{{ item.title }}</a>
+            </li>
+          {% endfor %}
+        {% endif %}
+        <li class="breadcrumbs__item">
+          <span class="breadcrumbs__current" aria-current="page">{{ collection.title }}</span>
+        </li>
+
+      {% elsif template contains 'page' %}
+               
+
+        {% assign breadcrumbs_list = page.metafields.custom.breadcrumbs_link_list.value %}
+        {% if breadcrumbs_list != blank %}
+          {% for item in breadcrumbs_list %}
+            <li class="breadcrumbs__item">
+              <a href="{{ item.url }}" class="breadcrumbs__link">{{ item.text }}</a>
+            </li>
+          {% endfor %}
+        {% endif %}
+        <li class="breadcrumbs__item">
+          <span class="breadcrumbs__current" aria-current="page">{{ page.title }}</span>
+        </li>
+
+      {% elsif template contains 'blog' %} {# This will match 'blog' and 'article' #}
+        {% assign breadcrumbs_list = blog.metafields.custom.breadcrumbs_link_list.value %}
+        {% if breadcrumbs_list != blank %}
+          {% for item in breadcrumbs_list %}
+            <li class="breadcrumbs__item">
+              <a href="{{ item.url }}" class="breadcrumbs__link">{{ item.text }}</a>
+            </li>
+          {% endfor %}
+        {% endif %}
+        <li class="breadcrumbs__item">
+          <span class="breadcrumbs__current" aria-current="page">{{ blog.title }}</span>
+        </li>
+
+      {% elsif template contains 'article' %}
+        {% assign breadcrumbs_list = article.metafields.custom.breadcrumbs_link_list.value %}
+        {% if breadcrumbs_list != blank %}
+          {% for item in breadcrumbs_list %}
+            <li class="breadcrumbs__item">
+              <a href="{{ item.url }}" class="breadcrumbs__link">{{ item.text }}</a>
+            </li>
+          {% endfor %}
+        {% endif %}
+        <li class="breadcrumbs__item">
+          <span class="breadcrumbs__current" aria-current="page">{{ article.title }}</span>
+        </li>
+
+      {% else %}
+        <li class="breadcrumbs__item">
+          <span class="breadcrumbs__current" aria-current="page">{{ page_title }}</span>
+        </li>
+      {% endif %}
+    </ol>
+  </nav>
+</section>
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "{{ shop.url }}"
+      }
+      {% assign position_counter = 1 %}
+
+      {% if template contains 'product' %}
+        {% assign breadcrumbs_list = product.metafields.custom.breadcrumbs_collection_list.value %}
+        {% if breadcrumbs_list != blank %}
+          {% for item in breadcrumbs_list %}
+            {% assign position_counter = position_counter | plus: 1 %}
+            ,{
+              "@type": "ListItem",
+              "position": {{ position_counter }},
+              "name": "{{ item.title | escape }}",
+              "item": "{{ shop.url }}{{ item.url }}"
+            }
+          {% endfor %}
+        {% endif %}
+        {% assign position_counter = position_counter | plus: 1 %}
+        ,{
+          "@type": "ListItem",
+          "position": {{ position_counter }},
+          "name": "{{ product.title | escape }}",
+          "item": "{{ shop.url }}{{ product.url }}"
+        }
+
+      {% elsif template contains 'collection' %}
+        {% assign breadcrumbs_list = collection.metafields.custom.breadcrumbs_collection_list.value %}
+        {% if breadcrumbs_list != blank %}
+          {% for item in breadcrumbs_list %}
+            {% assign position_counter = position_counter | plus: 1 %}
+            ,{
+              "@type": "ListItem",
+              "position": {{ position_counter }},
+              "name": "{{ item.title | escape }}",
+              "item": "{{ shop.url }}{{ item.url }}"
+            }
+          {% endfor %}
+        {% endif %}
+        {% assign position_counter = position_counter | plus: 1 %}
+        ,{
+          "@type": "ListItem",
+          "position": {{ position_counter }},
+          "name": "{{ collection.title | escape }}",
+          "item": "{{ shop.url }}{{ collection.url }}"
+        }
+
+      {% elsif template contains 'page' %}
+        {% assign breadcrumbs_list = page.metafields.custom.breadcrumbs_link_list.value %}
+        {% if breadcrumbs_list != blank %}
+          {% for item in breadcrumbs_list %}
+            {% assign position_counter = position_counter | plus: 1 %}
+            ,{
+              "@type": "ListItem",
+              "position": {{ position_counter }},
+              "name": "{{ item.text | escape }}",
+              "item": "{{ shop.url }}{{ item.url }}"
+            }
+          {% endfor %}
+        {% endif %}
+        {% assign position_counter = position_counter | plus: 1 %}
+        ,{
+          "@type": "ListItem",
+          "position": {{ position_counter }},
+          "name": "{{ page.title | escape }}",
+          "item": "{{ shop.url }}{{ page.url }}"
+        }
+
+      {% elsif template contains 'blog' %}
+        {% assign breadcrumbs_list = blog.metafields.custom.breadcrumbs_link_list.value %}
+        {% if breadcrumbs_list != blank %}
+          {% for item in breadcrumbs_list %}
+            {% assign position_counter = position_counter | plus: 1 %}
+            ,{
+              "@type": "ListItem",
+              "position": {{ position_counter }},
+              "name": "{{ item.text | escape }}",
+              "item": "{{ shop.url }}{{ item.url }}"
+            }
+          {% endfor %}
+        {% endif %}
+        {% assign position_counter = position_counter | plus: 1 %}
+        ,{
+          "@type": "ListItem",
+          "position": {{ position_counter }},
+          "name": "{{ blog.title | escape }}",
+          "item": "{{ shop.url }}{{ blog.url }}"
+        }
+
+      {% elsif template contains 'article' %}
+        {% assign breadcrumbs_list = article.metafields.custom.breadcrumbs_link_list.value %}
+        {% if breadcrumbs_list != blank %}
+          {% for item in breadcrumbs_list %}
+            {% assign position_counter = position_counter | plus: 1 %}
+            ,{
+              "@type": "ListItem",
+              "position": {{ position_counter }},
+              "name": "{{ item.text | escape }}",
+              "item": "{{ shop.url }}{{ item.url }}"
+            }
+          {% endfor %}
+        {% endif %}
+        {% assign position_counter = position_counter | plus: 1 %}
+        ,{
+          "@type": "ListItem",
+          "position": {{ position_counter }},
+          "name": "{{ article.title | escape }}",
+          "item": "{{ shop.url }}{{ article.url }}"
+        }
+
+      {% else %}
+        {% assign position_counter = position_counter | plus: 1 %}
+        ,{
+          "@type": "ListItem",
+          "position": {{ position_counter }},
+          "name": "{{ page_title | escape }}",
+          "item": "{{ shop.url }}{{ canonical_url }}"
+        }
+      {% endif %}
+    ]
+  }
+</script>
+
+{% schema %}
+{
+    "name": "Breadcrumbs Section",
+    "tag": "section",
+    "settings": [
+        {
+            "type": "checkbox",
+            "id": "show_home_link",
+            "label": "Show Home Link",
+            "default": true
+        },
+        {
+            "type": "select",
+            "id": "separator_choice",
+            "label": "Breadcrumb Separator",
+            "options": [
+                {
+                    "value": "/",
+                    "label": "Slash (/)"
+                },
+                {
+                    "value": ">",
+                    "label": "Greater Than (>)"
+                }
+            ],
+            "default": "/"
+        },
+        {
+            "type": "range",
+            "id": "breadcrumbs_section_padding_top",
+            "label": "Breadcrumbs Section Top Padding (px)",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "default": 5
+        },
+        {
+            "type": "range",
+            "id": "breadcrumbs_section_padding_bottom",
+            "label": "Breadcrumbs Section Bottom Padding (px)",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "default": 5
+        },
+        {
+            "type": "range",
+            "id": "breadcrumbs_vertical_padding",
+            "label": "Breadcrumbs Vertical Padding (px)",
+            "min": 0,
+            "max": 50,
+            "step": 1,
+            "default": 5
+        },
+        {
+            "type": "range",
+            "id": "breadcrumbs_item_horizontal_spacing",
+            "label": "Breadcrumbs Item Horizontal Spacing (px)",
+            "min": 0,
+            "max": 30,
+            "step": 1,
+            "default": 0
+        },
+        {
+            "type": "range",
+            "id": "breadcrumbs_font_size",
+            "label": "Breadcrumbs Font Size (em)",
+            "min": 0.5,
+            "max": 2,
+            "step": 0.1,
+            "default": 0.9
+        },
+        {
+            "type": "color",
+            "id": "breadcrumb_color",
+            "label": "Overall Text Color",
+            "default": "#181716"
+        },
+        {
+            "type": "color",
+            "id": "breadcrumb_link_color",
+            "label": "Link Color",
+            "default": "#181716"
+        },
+        {
+            "type": "color",
+            "id": "breadcrumb_link_hover_color",
+            "label": "Link Hover Color",
+            "default": "#181716"
+        },
+        {
+            "type": "color",
+            "id": "breadcrumb_current_color",
+            "label": "Current Page Text Color",
+            "default": "#181716"
+        },
+        {
+            "type": "color",
+            "id": "background_color",
+            "label": "Background Color",
+            "default": "#FFFEFC"
+        },
+        {
+            "type": "range",
+            "id": "background_opacity",
+            "label": "Background Opacity",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "unit": "%",
+            "default": 100
+        },
+        {
+            "type": "header",
+            "content": "Top Separator"
+        },
+        {
+            "type": "checkbox",
+            "id": "show_top_separator",
+            "label": "Show Top Separator",
+            "default": false
+        },
+        {
+            "type": "select",
+            "id": "top_separator_style",
+            "label": "Top Separator Style",
+            "options": [
+                { "value": "solid", "label": "Solid" },
+                { "value": "dashed", "label": "Dashed" },
+                { "value": "dotted", "label": "Dotted" },
+                { "value": "double", "label": "Double" }
+            ],
+            "default": "solid"
+        },
+        {
+            "type": "range",
+            "id": "top_separator_thickness",
+            "label": "Top Separator Thickness (px)",
+            "min": 1,
+            "max": 10,
+            "step": 1,
+            "unit": "px",
+            "default": 1
+        },
+        {
+            "type": "color",
+            "id": "top_separator_color",
+            "label": "Top Separator Color",
+            "default": "#CCCCCC"
+        },
+        {
+            "type": "header",
+            "content": "Bottom Separator"
+        },
+        {
+            "type": "checkbox",
+            "id": "show_bottom_separator",
+            "label": "Show Bottom Separator",
+            "default": false
+        },
+        {
+            "type": "select",
+            "id": "bottom_separator_style",
+            "label": "Bottom Separator Style",
+            "options": [
+                { "value": "solid", "label": "Solid" },
+                { "value": "dashed", "label": "Dashed" },
+                { "value": "dotted", "label": "Dotted" },
+                { "value": "double", "label": "Double" }
+            ],
+            "default": "solid"
+        },
+        {
+            "type": "range",
+            "id": "bottom_separator_thickness",
+            "label": "Bottom Separator Thickness (px)",
+            "min": 1,
+            "max": 10,
+            "step": 1,
+            "unit": "px",
+            "default": 1
+        },
+        {
+            "type": "color",
+            "id": "bottom_separator_color",
+            "label": "Bottom Separator Color",
+            "default": "#CCCCCC"
+        }
+    ],
+    "presets": [
+        {
+            "name": "Breadcrumbs"
+        }
+    ]
+}
 {% endschema %}

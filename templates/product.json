@@ -9,6 +9,33 @@
  */
 {
   "sections": {
+    "breadcrumbs_section_XCAMiA": {
+      "type": "breadcrumbs-section",
+      "name": "Breadcrumbs",
+      "settings": {
+        "show_home_link": true,
+        "separator_choice": "/",
+        "breadcrumbs_section_padding_top": 5,
+        "breadcrumbs_section_padding_bottom": 5,
+        "breadcrumbs_vertical_padding": 5,
+        "breadcrumbs_item_horizontal_spacing": 0,
+        "breadcrumbs_font_size": 0.9,
+        "breadcrumb_color": "#181716",
+        "breadcrumb_link_color": "#181716",
+        "breadcrumb_link_hover_color": "#181716",
+        "breadcrumb_current_color": "#181716",
+        "background_color": "#FFFEFC",
+        "background_opacity": 100,
+        "show_top_separator": false,
+        "top_separator_style": "solid",
+        "top_separator_thickness": 1,
+        "top_separator_color": "#CCCCCC",
+        "show_bottom_separator": false,
+        "bottom_separator_style": "solid",
+        "bottom_separator_thickness": 1,
+        "bottom_separator_color": "#CCCCCC"
+      }
+    },
     "main": {
       "type": "main-product",
       "blocks": {
@@ -193,6 +220,7 @@
     }
   },
   "order": [
+    "breadcrumbs_section_XCAMiA",
     "main",
     "related-products",
     "multirow_hkBxky"

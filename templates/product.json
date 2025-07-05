@@ -45,8 +45,39 @@
             "show_gift_card_recipient": true
           }
         },
+        "icon_with_text_t98UzP": {
+          "type": "icon-with-text",
+          "settings": {
+            "layout": "horizontal",
+            "icon_1": "heart",
+            "heading_1": "",
+            "icon_2": "return",
+            "heading_2": "Free Returns 30 Days",
+            "icon_3": "truck",
+            "heading_3": "Next-Day Shipping"
+          }
+        },
+        "collapsible_tab_CFdPE9": {
+          "type": "collapsible_tab",
+          "settings": {
+            "heading": "Overview",
+            "icon": "clipboard",
+            "content": "{{ product.description }}",
+            "page": ""
+          }
+        },
+        "collapsible_tab_pPGyDd": {
+          "type": "collapsible_tab",
+          "settings": {
+            "heading": "Specifications",
+            "icon": "check_mark",
+            "content": "<p>{{ product.metafields.custom.specifications | metafield_tag }}</p>",
+            "page": ""
+          }
+        },
         "description": {
           "type": "description",
+          "disabled": true,
           "settings": {}
         },
         "share": {
@@ -71,10 +102,14 @@
         "variant_picker",
         "quantity_selector",
         "buy_buttons",
+        "icon_with_text_t98UzP",
+        "collapsible_tab_CFdPE9",
+        "collapsible_tab_pPGyDd",
         "description",
         "share",
         "checkbox_upsell_pjq6iN"
       ],
+      "custom_css": [],
       "settings": {
         "enable_sticky_info": true,
         "color_scheme": "scheme-1",
@@ -108,10 +143,58 @@
         "padding_top": 36,
         "padding_bottom": 28
       }
+    },
+    "multirow_hkBxky": {
+      "type": "multirow",
+      "blocks": {
+        "row_3zmwwK": {
+          "type": "row",
+          "settings": {
+            "image": "shopify://shop_images/ChatGPT_Image_Jul_5_2025_10_58_35_PM.png",
+            "caption": "Eco-friendly",
+            "heading": "Manufacturing",
+            "text": "<p><br/>We prioritize <strong>zero-waste manufacturing</strong> and <strong>eco-friendly processes</strong> by designing for material circularity and integrating advanced technologies like additive manufacturing and closed-loop recycling. This minimizes scrap, re-integrates byproducts, and optimizes resource consumption through renewable energy and efficient water usage. Every step is scrutinized to ensure our operations contribute positively to the environment.<br/><br/></p>",
+            "button_label": "",
+            "button_link": ""
+          }
+        },
+        "row_UQfiQg": {
+          "type": "row",
+          "settings": {
+            "image": "shopify://shop_images/ChatGPT_Image_Jul_5_2025_11_03_32_PM.png",
+            "caption": "support for local",
+            "heading": "Community",
+            "text": "<p>We believe in actively <strong>giving back to the community</strong> by fostering strong local partnerships and dedicating resources to initiatives that address pressing social and environmental needs. Our commitment extends beyond financial contributions; we encourage employee volunteerism, share our expertise with local organizations, and support educational programs. By investing in the well-being of our community, we aim to create a positive and lasting impact that extends far beyond our business operations.</p>",
+            "button_label": "",
+            "button_link": ""
+          }
+        }
+      },
+      "block_order": [
+        "row_3zmwwK",
+        "row_UQfiQg"
+      ],
+      "name": "t:sections.multirow.presets.name",
+      "settings": {
+        "image_height": "medium",
+        "desktop_image_width": "medium",
+        "image_layout": "alternate-left",
+        "heading_size": "h1",
+        "text_style": "body",
+        "button_style": "secondary",
+        "desktop_content_position": "middle",
+        "desktop_content_alignment": "left",
+        "mobile_content_alignment": "left",
+        "section_color_scheme": "",
+        "row_color_scheme": "",
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
     }
   },
   "order": [
     "main",
-    "related-products"
+    "related-products",
+    "multirow_hkBxky"
   ]
 }

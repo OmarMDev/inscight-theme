@@ -155,3 +155,155 @@
   }
 }
 </style>
+<div class="wholesale-inquiry-form">
+  <div class="page-width">
+    {% if section.settings.heading != blank %}
+      <h2 class="wholesale-inquiry-form__heading">
+        {{ section.settings.heading }}
+      </h2>
+    {% endif %}
+
+    <div
+      class="wholesale-inquiry-form__container"
+      style="background-color: {{ section.settings.box_background_color }};"
+    >
+      {% if section.settings.subheading != blank %}
+        <p class="wholesale-inquiry-form__subheading">
+          {{ section.settings.subheading }}
+        </p>
+      {% endif %}
+
+      <div class="wholesale-inquiry-form__form-wrapper">
+        {% form 'customer' %}
+          {% if form.posted_successfully? %}
+            <div class="wholesale-inquiry-form__success">
+              <p>{{ section.settings.success_message }}</p>
+            </div>
+          {% else %}
+            {% if form.errors %}
+              <div class="wholesale-inquiry-form__errors">
+                {{ form.errors | default_errors }}
+              </div>
+            {% endif %}
+
+            {%- comment -%} Hidden tag to mark wholesale inquiries for Flow trigger {%- endcomment -%}
+            <input type="hidden" name="contact[tags]" value="wholesale-inquiry">
+
+            <div class="wholesale-inquiry-form__fields">
+              <div class="wholesale-inquiry-form__field">
+                <label for="contact-name" class="visually-hidden">Your name</label>
+                <input
+                  type="text"
+                  id="contact-name"
+                  name="contact[first_name]"
+                  placeholder="Your name"
+                  required
+                >
+              </div>
+
+              <div class="wholesale-inquiry-form__field">
+                <label for="contact-email" class="visually-hidden">Email address</label>
+                <input
+                  type="email"
+                  id="contact-email"
+                  name="contact[email]"
+                  placeholder="Email address"
+                  required
+                >
+              </div>
+
+              <div class="wholesale-inquiry-form__field">
+                <label for="contact-phone" class="visually-hidden">Phone number</label>
+                <input
+                  type="tel"
+                  id="contact-phone"
+                  name="contact[phone]"
+                  placeholder="Phone number"
+                >
+              </div>
+
+              <div class="wholesale-inquiry-form__field">
+                <label for="contact-company" class="visually-hidden">Company name</label>
+                <input
+                  type="text"
+                  id="contact-company"
+                  name="contact[last_name]"
+                  placeholder="Company name"
+                >
+              </div>
+            </div>
+
+            <div class="wholesale-inquiry-form__submit">
+              <button type="submit" class="wholesale-inquiry-form__button">
+                {{ section.settings.button_text }}
+              </button>
+            </div>
+          {% endif %}
+        {% endform %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Wholesale Inquiry Form",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "REQUEST DECK & PRICING"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Please complete the form below to receive our Pair Beautifully™ deck and pricing."
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button text",
+      "default": "Request wholesale deck & pricing"
+    },
+    {
+      "type": "textarea",
+      "id": "success_message",
+      "label": "Success message",
+      "default": "Thank you for your inquiry! We'll be in touch soon with our wholesale information."
+    },
+    {
+      "type": "color",
+      "id": "box_background_color",
+      "label": "Box background color",
+      "default": "#F1E4D6"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "default": 80
+    }
+  ],
+  "presets": [
+    {
+      "name": "Wholesale Inquiry Form"
+    }
+  ]
+}
+{% endschema %}

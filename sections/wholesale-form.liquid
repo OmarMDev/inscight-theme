@@ -1,0 +1,155 @@
+.wholesale-inquiry-form {
+  padding: 80px 0;
+  background-color: #F6F1EB;
+}
+
+.wholesale-inquiry-form__heading {
+  font-family: 'Antiga', serif;
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: 0.25em;
+  color: #1d1919;
+  margin: 0 auto 32px;
+  text-transform: uppercase;
+  text-align: center;
+  max-width: 440px;
+}
+
+.wholesale-inquiry-form__container {
+  max-width: 440px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 48px 56px;
+}
+
+.wholesale-inquiry-form__subheading {
+  font-family: 'Adobe Garamond Pro', serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: #1d1919;
+  margin: 0 0 32px;
+}
+
+.wholesale-inquiry-form__form-wrapper {
+  width: 100%;
+}
+
+.wholesale-inquiry-form__fields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.wholesale-inquiry-form__field {
+  width: 100%;
+}
+
+.wholesale-inquiry-form__field input {
+  width: 100%;
+  padding: 12px 16px;
+  background-color: #F6F1EB;
+  border: 1px solid rgba(29, 25, 25, 0.08);
+  border-radius: 0;
+  font-family: 'Adobe Garamond Pro', serif;
+  font-size: 13px;
+  color: #1d1919;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.wholesale-inquiry-form__field input::placeholder {
+  color: rgba(29, 25, 25, 0.5);
+  opacity: 1;
+}
+
+.wholesale-inquiry-form__field input:focus {
+  outline: 2px solid #1d1919;
+  outline-offset: 0;
+}
+
+.wholesale-inquiry-form__submit {
+  display: flex;
+  justify-content: center;
+}
+
+.wholesale-inquiry-form__button {
+  padding: 11px 28px;
+  background-color: #1d1919;
+  color: #ffffff;
+  font-family: 'Adobe Garamond Pro', serif;
+  font-size: 13px;
+  font-weight: 400;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.wholesale-inquiry-form__button:hover {
+  opacity: 0.8;
+}
+
+.wholesale-inquiry-form__success {
+  padding: 24px;
+  background-color: rgba(29, 25, 25, 0.05);
+  margin-bottom: 24px;
+  font-family: 'Adobe Garamond Pro', serif;
+  font-size: 18px;
+  color: #1d1919;
+}
+
+.wholesale-inquiry-form__errors {
+  padding: 24px;
+  background-color: rgba(255, 0, 0, 0.05);
+  margin-bottom: 24px;
+  font-family: 'Adobe Garamond Pro', serif;
+  font-size: 16px;
+  color: #c00;
+  text-align: left;
+}
+
+.wholesale-inquiry-form__errors ul {
+  list-style: disc;
+  padding-left: 20px;
+  margin: 0;
+}
+
+/* Mobile styles */
+@media screen and (max-width: 749px) {
+  .wholesale-inquiry-form {
+    padding: 60px 0;
+  }
+
+  .wholesale-inquiry-form__heading {
+    font-size: 14px;
+    letter-spacing: 0.2em;
+    margin-bottom: 24px;
+  }
+
+  .wholesale-inquiry-form__container {
+    padding: 36px 14px;
+  }
+
+  .wholesale-inquiry-form__subheading {
+    font-size: 16px;
+    margin-bottom: 28px;
+  }
+
+  .wholesale-inquiry-form__field input {
+    padding: 11px 26px;
+    font-size: 16px;
+  }
+
+  .wholesale-inquiry-form__button {
+    padding: 10px 24px;
+    font-size: 16px;
+  }
+
+  .wholesale-inquiry-form__fields {
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+}

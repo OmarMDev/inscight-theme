@@ -1,0 +1,213 @@
+.wholesale-inquiry-form {
+  padding: 80px 0;
+  background-color: #F6F1EB;
+  margin-top: 50px;
+}
+
+.wholesale-inquiry-form__heading {
+  font-family: 'Antiga', serif;
+  font-size: 30px;
+  font-weight: 400;
+  letter-spacing: 0.11em;
+  color: #1d1919;
+  margin: 0 auto 32px;
+  text-transform: uppercase;
+  text-align: center;
+  max-width: 620px;
+  line-height: 40px;
+}
+
+.wholesale-inquiry-form__container {
+  max-width: 620px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 48px 70px;
+}
+
+.wholesale-inquiry-form__subheading {
+  font-family: 'Adobe Garamond Pro', serif;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 26px;
+  color: #1d1919;
+  margin: 0 0 32px;
+  letter-spacing: 2.2px;
+  max-width: 538px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.wholesale-inquiry-form__form-wrapper {
+  width: 100%;
+}
+
+.wholesale-inquiry-form__fields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.wholesale-inquiry-form__field {
+  width: 100%;
+}
+
+.wholesale-inquiry-form__field input {
+  width: 100%;
+  height: 64px;
+  padding: 0 16px;
+  background-color: #F6F1EB;
+  border: 1px solid rgba(29, 25, 25, 0.08);
+  border-radius: 0;
+  font-family: 'Adobe Garamond Pro', serif;
+  font-size: 16px;
+  color: #444444;
+  line-height: 18px;
+  letter-spacing: 1px;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.wholesale-inquiry-form__field input::placeholder {
+  color: #444444;
+  opacity: 1;
+}
+
+.wholesale-inquiry-form__field input:focus {
+  outline: 2px solid #1d1919;
+  outline-offset: 0;
+}
+
+.wholesale-inquiry-form__submit {
+  display: flex;
+  justify-content: center;
+}
+
+.wholesale-inquiry-form__button {
+  padding: 15px 10px;
+  background-color: #121212;
+  color: #ffffff;
+  font-family: 'Adobe Garamond Pro', serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 18px;
+  letter-spacing: 1px;
+  border: 1px solid #000000;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+  -webkit-appearance: none;
+  appearance: none;
+  width: 295.2px;
+  position: relative;
+}
+
+.wholesale-inquiry-form__button:hover {
+  opacity: 0.8;
+}
+
+.wholesale-inquiry-form__button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.wholesale-inquiry-form__button.loading {
+  pointer-events: none;
+}
+
+.wholesale-inquiry-form__button.loading::after {
+  content: '';
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: button-loading-spinner 0.6s linear infinite;
+}
+
+@keyframes button-loading-spinner {
+  to {
+    transform: translateY(-50%) rotate(360deg);
+  }
+}
+
+.wholesale-inquiry-form__success {
+  padding: 24px;
+  background-color: rgba(29, 25, 25, 0.05);
+  margin-bottom: 24px;
+  font-family: 'Adobe Garamond Pro', serif;
+  font-size: 18px;
+  color: #1d1919;
+}
+
+.wholesale-inquiry-form__errors {
+  padding: 24px;
+  background-color: rgba(255, 0, 0, 0.05);
+  margin-bottom: 24px;
+  font-family: 'Adobe Garamond Pro', serif;
+  font-size: 16px;
+  color: #c00;
+  text-align: left;
+}
+
+.wholesale-inquiry-form__errors ul {
+  list-style: disc;
+  padding-left: 20px;
+  margin: 0;
+}
+
+.wholesale-inquiry-form__setup-message {
+  padding: 32px;
+  background-color: rgba(255, 165, 0, 0.1);
+  border: 2px dashed rgba(255, 165, 0, 0.5);
+  border-radius: 4px;
+  text-align: center;
+}
+
+.wholesale-inquiry-form__setup-message p {
+  font-family: 'Adobe Garamond Pro', serif;
+  font-size: 16px;
+  color: #1d1919;
+  margin: 0;
+}
+
+/* Mobile styles */
+@media screen and (max-width: 749px) {
+  .wholesale-inquiry-form {
+    padding: 60px 0;
+  }
+
+  .wholesale-inquiry-form__heading {
+    font-size: 26px;
+    letter-spacing: 0.2em;
+    margin-bottom: 24px;
+  }
+
+  .wholesale-inquiry-form__container {
+    padding: 36px 14px;
+  }
+
+  .wholesale-inquiry-form__subheading {
+    font-size: 16px;
+    margin-bottom: 28px;
+  }
+
+  .wholesale-inquiry-form__field input {
+    padding: 11px 26px;
+    font-size: 16px;
+    height: 48px;
+  }
+
+  .wholesale-inquiry-form__button {
+    padding: 10px 20px;
+    font-size: 16px;
+  }
+
+  .wholesale-inquiry-form__fields {
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+}

@@ -1,161 +1,10 @@
-<style>
-.wholesale-inquiry-form {
-  padding: 80px 0;
-  background-color: #F6F1EB;
-}
+{{ 'section-wholesale-inquiry-form.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'wholesale-inquiry-form.js' | asset_url }}" defer="defer"></script>
 
-.wholesale-inquiry-form__heading {
-  font-family: 'Antiga', serif;
-  font-size: 16px;
-  font-weight: 400;
-  letter-spacing: 0.25em;
-  color: #1d1919;
-  margin: 0 auto 32px;
-  text-transform: uppercase;
-  text-align: center;
-  max-width: 440px;
-}
-
-.wholesale-inquiry-form__container {
-  max-width: 440px;
-  margin: 0 auto;
-  text-align: center;
-  padding: 48px 56px;
-}
-
-.wholesale-inquiry-form__subheading {
-  font-family: 'Adobe Garamond Pro', serif;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 1.6;
-  color: #1d1919;
-  margin: 0 0 32px;
-}
-
-.wholesale-inquiry-form__form-wrapper {
-  width: 100%;
-}
-
-.wholesale-inquiry-form__fields {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 28px;
-}
-
-.wholesale-inquiry-form__field {
-  width: 100%;
-}
-
-.wholesale-inquiry-form__field input {
-  width: 100%;
-  padding: 12px 16px;
-  background-color: #F6F1EB;
-  border: 1px solid rgba(29, 25, 25, 0.08);
-  border-radius: 0;
-  font-family: 'Adobe Garamond Pro', serif;
-  font-size: 13px;
-  color: #1d1919;
-  -webkit-appearance: none;
-  appearance: none;
-}
-
-.wholesale-inquiry-form__field input::placeholder {
-  color: rgba(29, 25, 25, 0.5);
-  opacity: 1;
-}
-
-.wholesale-inquiry-form__field input:focus {
-  outline: 2px solid #1d1919;
-  outline-offset: 0;
-}
-
-.wholesale-inquiry-form__submit {
-  display: flex;
-  justify-content: center;
-}
-
-.wholesale-inquiry-form__button {
-  padding: 11px 28px;
-  background-color: #1d1919;
-  color: #ffffff;
-  font-family: 'Adobe Garamond Pro', serif;
-  font-size: 13px;
-  font-weight: 400;
-  border: none;
-  cursor: pointer;
-  transition: opacity 0.2s ease;
-  -webkit-appearance: none;
-  appearance: none;
-}
-
-.wholesale-inquiry-form__button:hover {
-  opacity: 0.8;
-}
-
-.wholesale-inquiry-form__success {
-  padding: 24px;
-  background-color: rgba(29, 25, 25, 0.05);
-  margin-bottom: 24px;
-  font-family: 'Adobe Garamond Pro', serif;
-  font-size: 18px;
-  color: #1d1919;
-}
-
-.wholesale-inquiry-form__errors {
-  padding: 24px;
-  background-color: rgba(255, 0, 0, 0.05);
-  margin-bottom: 24px;
-  font-family: 'Adobe Garamond Pro', serif;
-  font-size: 16px;
-  color: #c00;
-  text-align: left;
-}
-
-.wholesale-inquiry-form__errors ul {
-  list-style: disc;
-  padding-left: 20px;
-  margin: 0;
-}
-
-/* Mobile styles */
-@media screen and (max-width: 749px) {
-  .wholesale-inquiry-form {
-    padding: 60px 0;
-  }
-
-  .wholesale-inquiry-form__heading {
-    font-size: 14px;
-    letter-spacing: 0.2em;
-    margin-bottom: 24px;
-  }
-
-  .wholesale-inquiry-form__container {
-    padding: 36px 14px;
-  }
-
-  .wholesale-inquiry-form__subheading {
-    font-size: 16px;
-    margin-bottom: 28px;
-  }
-
-  .wholesale-inquiry-form__field input {
-    padding: 11px 26px;
-    font-size: 16px;
-  }
-
-  .wholesale-inquiry-form__button {
-    padding: 10px 24px;
-    font-size: 16px;
-  }
-
-  .wholesale-inquiry-form__fields {
-    gap: 10px;
-    margin-bottom: 24px;
-  }
-}
-</style>
-<div class="wholesale-inquiry-form">
+<wholesale-inquiry-form
+  class="wholesale-inquiry-form"
+  data-create-shopify-customer="{{ section.settings.create_shopify_customer }}"
+>
   <div class="page-width">
     {% if section.settings.heading != blank %}
       <h2 class="wholesale-inquiry-form__heading">
@@ -174,60 +23,75 @@
       {% endif %}
 
       <div class="wholesale-inquiry-form__form-wrapper">
-        {% form 'customer' %}
-          {% if form.posted_successfully? %}
-            <div class="wholesale-inquiry-form__success">
-              <p>{{ section.settings.success_message }}</p>
-            </div>
-          {% else %}
-            {% if form.errors %}
-              <div class="wholesale-inquiry-form__errors">
-                {{ form.errors | default_errors }}
-              </div>
-            {% endif %}
+        {%- comment -%} Success message (initially hidden, shown by JS after successful submission) {%- endcomment -%}
+        <div class="wholesale-inquiry-form__success" style="display: none;">
+          <p>{{ section.settings.success_message }}</p>
+        </div>
 
-            {%- comment -%} Hidden tag to mark wholesale inquiries for Flow trigger {%- endcomment -%}
-            <input type="hidden" name="contact[tags]" value="wholesale-inquiry">
+        {%- comment -%} Error message container (initially hidden, shown by JS if submission fails) {%- endcomment -%}
+        <div class="wholesale-inquiry-form__errors" style="display: none;"></div>
+
+        {%- comment -%} Mailchimp form with AJAX submission {%- endcomment -%}
+        {%- if section.settings.mailchimp_user_id != blank and section.settings.mailchimp_list_id != blank -%}
+          <form
+            action="https://{{ section.settings.mailchimp_domain }}.list-manage.com/subscribe/post"
+            method="post"
+            class="wholesale-inquiry-form__mailchimp-form"
+            novalidate
+          >
+            {%- comment -%} Mailchimp hidden fields {%- endcomment -%}
+            <input type="hidden" name="u" value="{{ section.settings.mailchimp_user_id }}">
+            <input type="hidden" name="id" value="{{ section.settings.mailchimp_list_id }}">
+            
+            {%- comment -%} Bot prevention field (honeypot) {%- endcomment -%}
+            <div style="position: absolute; left: -5000px;" aria-hidden="true">
+              <input type="text" name="b_{{ section.settings.mailchimp_user_id }}_{{ section.settings.mailchimp_list_id }}" tabindex="-1" value="">
+            </div>
+
+            {%- comment -%} Add tag to Mailchimp if tags are enabled {%- endcomment -%}
+            {%- if section.settings.add_mailchimp_tag -%}
+              <input type="hidden" name="TAGS" value="wholesale-inquiry">
+            {%- endif -%}
 
             <div class="wholesale-inquiry-form__fields">
               <div class="wholesale-inquiry-form__field">
-                <label for="contact-name" class="visually-hidden">Your name</label>
+                <label for="mce-FNAME" class="visually-hidden">Your name</label>
                 <input
                   type="text"
-                  id="contact-name"
-                  name="contact[first_name]"
+                  id="mce-FNAME"
+                  name="FNAME"
                   placeholder="Your name"
                   required
                 >
               </div>
 
               <div class="wholesale-inquiry-form__field">
-                <label for="contact-email" class="visually-hidden">Email address</label>
+                <label for="mce-EMAIL" class="visually-hidden">Email address</label>
                 <input
                   type="email"
-                  id="contact-email"
-                  name="contact[email]"
+                  id="mce-EMAIL"
+                  name="EMAIL"
                   placeholder="Email address"
                   required
                 >
               </div>
 
               <div class="wholesale-inquiry-form__field">
-                <label for="contact-phone" class="visually-hidden">Phone number</label>
+                <label for="mce-PHONE" class="visually-hidden">Phone number</label>
                 <input
                   type="tel"
-                  id="contact-phone"
-                  name="contact[phone]"
+                  id="mce-PHONE"
+                  name="PHONE"
                   placeholder="Phone number"
                 >
               </div>
 
               <div class="wholesale-inquiry-form__field">
-                <label for="contact-company" class="visually-hidden">Company name</label>
+                <label for="mce-COMPANY" class="visually-hidden">Company name</label>
                 <input
                   type="text"
-                  id="contact-company"
-                  name="contact[last_name]"
+                  id="mce-COMPANY"
+                  name="COMPANY"
                   placeholder="Company name"
                 >
               </div>
@@ -238,17 +102,25 @@
                 {{ section.settings.button_text }}
               </button>
             </div>
-          {% endif %}
-        {% endform %}
+          </form>
+        {%- else -%}
+          <div class="wholesale-inquiry-form__setup-message">
+            <p><strong>Setup Required:</strong> Please configure your Mailchimp settings in the theme editor to enable this form.</p>
+          </div>
+        {%- endif -%}
       </div>
     </div>
   </div>
-</div>
+</wholesale-inquiry-form>
 
 {% schema %}
 {
   "name": "Wholesale Inquiry Form",
   "settings": [
+    {
+      "type": "header",
+      "content": "Form Content"
+    },
     {
       "type": "text",
       "id": "heading",
@@ -272,6 +144,56 @@
       "id": "success_message",
       "label": "Success message",
       "default": "Thank you for your inquiry! We'll be in touch soon with our wholesale information."
+    },
+    {
+      "type": "header",
+      "content": "Mailchimp Integration",
+      "info": "Configure your Mailchimp settings to enable automated email sending"
+    },
+    {
+      "type": "text",
+      "id": "mailchimp_user_id",
+      "label": "Mailchimp User ID",
+      "info": "Find this in your Mailchimp form embed code (the 'u' parameter). Example: 1a2b3c4d5e6f7g8h9i0j1k"
+    },
+    {
+      "type": "text",
+      "id": "mailchimp_list_id",
+      "label": "Mailchimp List/Audience ID",
+      "info": "Find this in your Mailchimp form embed code (the 'id' parameter). Example: a1b2c3d4e5"
+    },
+    {
+      "type": "text",
+      "id": "mailchimp_domain",
+      "label": "Mailchimp Data Center",
+      "info": "Usually something like 'us1', 'us2', 'us21', etc. Find this in your Mailchimp account URL or form code",
+      "default": "us1"
+    },
+    {
+      "type": "checkbox",
+      "id": "add_mailchimp_tag",
+      "label": "Add 'wholesale-inquiry' tag in Mailchimp",
+      "info": "Tags must be enabled in your Mailchimp audience settings",
+      "default": true
+    },
+    {
+      "type": "paragraph",
+      "content": "**How to find your Mailchimp IDs:** Go to Mailchimp → Audience → Signup forms → Embedded forms. Look for the form action URL like: list-manage.com/subscribe/post?u=USER_ID&id=LIST_ID"
+    },
+    {
+      "type": "header",
+      "content": "Advanced Options"
+    },
+    {
+      "type": "checkbox",
+      "id": "create_shopify_customer",
+      "label": "Also create Shopify customer contact",
+      "info": "Enable this to create a customer in Shopify in addition to adding to Mailchimp",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Styling"
     },
     {
       "type": "color",

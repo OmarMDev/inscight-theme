@@ -5,10 +5,30 @@ class WholesaleInquiryForm extends HTMLElement {
     this.submitButton = this.querySelector('.wholesale-inquiry-form__button');
     this.successMessage = this.querySelector('.wholesale-inquiry-form__success');
     this.errorMessage = this.querySelector('.wholesale-inquiry-form__errors');
+    this.iframe = null;
     
     if (this.form) {
+      this.setupIframeSubmission();
       this.form.addEventListener('submit', this.handleSubmit.bind(this));
     }
+  }
+
+  setupIframeSubmission() {
+    // Create hidden iframe for form submission
+    this.iframe = document.createElement('iframe');
+    this.iframe.name = 'mailchimp-submit-frame';
+    this.iframe.style.display = 'none';
+    document.body.appendChild(this.iframe);
+    
+    // Set form target to iframe
+    this.form.setAttribute('target', 'mailchimp-submit-frame');
+    
+    // Listen for iframe load to detect submission result
+    this.iframe.addEventListener('load', () => {
+      if (this.isSubmitting) {
+        this.handleMailchimpResponse();
+      }
+    });
   }
 
   handleSubmit(event) {
@@ -17,77 +37,103 @@ class WholesaleInquiryForm extends HTMLElement {
     // Disable submit button and show loading state
     this.submitButton.disabled = true;
     this.submitButton.classList.add('loading');
-    const originalButtonText = this.submitButton.textContent;
+    this.originalButtonText = this.submitButton.textContent;
     this.submitButton.textContent = 'Submitting...';
     
     // Hide any previous messages
     if (this.successMessage) this.successMessage.style.display = 'none';
     if (this.errorMessage) this.errorMessage.style.display = 'none';
     
-    const formData = new FormData(this.form);
+    // Mark that we're submitting
+    this.isSubmitting = true;
     
-    // Submit to Mailchimp
-    fetch(this.form.action, {
-      method: 'POST',
-      body: formData,
-      mode: 'no-cors' // Mailchimp doesn't support CORS, so we use no-cors mode
-    })
-    .then(() => {
-      // With no-cors mode, we can't read the response, so we assume success
-      // Mailchimp will send the welcome email if configured
+    // Store form data for potential Shopify customer creation
+    this.formData = new FormData(this.form);
+    
+    // Submit the form (will go to iframe)
+    this.form.submit();
+  }
+
+  handleMailchimpResponse() {
+    this.isSubmitting = false;
+    
+    try {
+      // Try to read iframe content to check for success/error
+      const iframeDoc = this.iframe.contentDocument || this.iframe.contentWindow.document;
+      const iframeBody = iframeDoc.body;
       
-      // Check if we should also create Shopify customer
-      const createShopifyCustomer = this.dataset.createShopifyCustomer === 'true';
-      
-      if (createShopifyCustomer) {
-        return this.createShopifyCustomer(formData);
-      } else {
-        return Promise.resolve();
+      if (iframeBody) {
+        const bodyText = iframeBody.innerText || iframeBody.textContent || '';
+        
+        // Check for Mailchimp error messages
+        if (bodyText.toLowerCase().includes('already subscribed') ||
+            bodyText.toLowerCase().includes('too many') ||
+            bodyText.toLowerCase().includes('invalid') ||
+            bodyText.toLowerCase().includes('error')) {
+          this.showError('There was an issue with your submission. Please check your information and try again.');
+          this.resetButton();
+          return;
+        }
       }
-    })
-    .then(() => {
-      // Show success message
+    } catch (e) {
+      // Cross-origin iframe - can't read content, assume success
+      console.log('Cannot read iframe content (cross-origin), assuming success');
+    }
+    
+    // Check if we should also create Shopify customer
+    const createShopifyCustomer = this.dataset.createShopifyCustomer === 'true';
+    
+    if (createShopifyCustomer) {
+      this.createShopifyCustomer(this.formData)
+        .then(() => {
+          this.showSuccess();
+          this.form.reset();
+          this.resetButton();
+        })
+        .catch(() => {
+          // Still show success for Mailchimp, just log Shopify error
+          console.warn('Shopify customer creation failed, but Mailchimp submission succeeded');
+          this.showSuccess();
+          this.form.reset();
+          this.resetButton();
+        });
+    } else {
       this.showSuccess();
       this.form.reset();
-    })
-    .catch((error) => {
-      console.error('Error:', error);
-      this.showError('There was an error submitting your request. Please try again.');
-    })
-    .finally(() => {
-      // Re-enable submit button
-      this.submitButton.disabled = false;
-      this.submitButton.classList.remove('loading');
-      this.submitButton.textContent = originalButtonText;
-    });
+      this.resetButton();
+    }
+  }
+
+  resetButton() {
+    this.submitButton.disabled = false;
+    this.submitButton.classList.remove('loading');
+    this.submitButton.textContent = this.originalButtonText;
   }
   
-  async createShopifyCustomer(mailchimpFormData) {
+  async createShopifyCustomer(formData) {
     // Create a new FormData for Shopify customer form
     const shopifyFormData = new FormData();
     shopifyFormData.append('form_type', 'customer');
     shopifyFormData.append('utf8', '✓');
     shopifyFormData.append('contact[tags]', 'wholesale-inquiry');
-    shopifyFormData.append('contact[first_name]', mailchimpFormData.get('FNAME') || '');
-    shopifyFormData.append('contact[email]', mailchimpFormData.get('EMAIL') || '');
-    shopifyFormData.append('contact[phone]', mailchimpFormData.get('PHONE') || '');
-    shopifyFormData.append('contact[note][Company]', mailchimpFormData.get('COMPANY') || '');
+    shopifyFormData.append('contact[first_name]', formData.get('FNAME') || '');
+    shopifyFormData.append('contact[email]', formData.get('EMAIL') || '');
+    shopifyFormData.append('contact[phone]', formData.get('PHONE') || '');
     
-    try {
-      const response = await fetch('/contact', {
-        method: 'POST',
-        body: shopifyFormData,
-        headers: {
-          'Accept': 'application/json'
-        }
-      });
-      
-      if (!response.ok) {
-        console.warn('Shopify customer creation failed, but Mailchimp submission succeeded');
+    // Handle company field - could be COMPANY or MMERGE5
+    const companyValue = formData.get('MMERGE5') || formData.get('COMPANY') || '';
+    shopifyFormData.append('contact[note][Company]', companyValue);
+    
+    const response = await fetch('/contact', {
+      method: 'POST',
+      body: shopifyFormData,
+      headers: {
+        'Accept': 'application/json'
       }
-    } catch (error) {
-      console.warn('Shopify customer creation error:', error);
-      // Don't throw - we don't want to show error if Mailchimp succeeded
+    });
+    
+    if (!response.ok) {
+      throw new Error('Shopify customer creation failed');
     }
   }
   

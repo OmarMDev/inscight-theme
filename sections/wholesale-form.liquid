@@ -31,27 +31,18 @@
         {%- comment -%} Error message container (initially hidden, shown by JS if submission fails) {%- endcomment -%}
         <div class="wholesale-inquiry-form__errors" style="display: none;"></div>
 
-        {%- comment -%} Mailchimp form with AJAX submission {%- endcomment -%}
-        {%- if section.settings.mailchimp_user_id != blank and section.settings.mailchimp_list_id != blank -%}
+        {%- comment -%} Mailchimp form with iframe submission {%- endcomment -%}
+        {%- if section.settings.mailchimp_form_action != blank -%}
           <form
-            action="https://{{ section.settings.mailchimp_domain }}.list-manage.com/subscribe/post"
+            action="{{ section.settings.mailchimp_form_action }}"
             method="post"
             class="wholesale-inquiry-form__mailchimp-form"
             novalidate
           >
-            {%- comment -%} Mailchimp hidden fields {%- endcomment -%}
-            <input type="hidden" name="u" value="{{ section.settings.mailchimp_user_id }}">
-            <input type="hidden" name="id" value="{{ section.settings.mailchimp_list_id }}">
-            
-            {%- comment -%} Bot prevention field (honeypot) {%- endcomment -%}
+            {%- comment -%} Bot prevention field (honeypot) - Use the exact name from Mailchimp {%- endcomment -%}
             <div style="position: absolute; left: -5000px;" aria-hidden="true">
-              <input type="text" name="b_{{ section.settings.mailchimp_user_id }}_{{ section.settings.mailchimp_list_id }}" tabindex="-1" value="">
+              <input type="text" name="{{ section.settings.mailchimp_honeypot }}" tabindex="-1" value="">
             </div>
-
-            {%- comment -%} Add tag to Mailchimp if tags are enabled {%- endcomment -%}
-            {%- if section.settings.add_mailchimp_tag -%}
-              <input type="hidden" name="TAGS" value="wholesale-inquiry">
-            {%- endif -%}
 
             <div class="wholesale-inquiry-form__fields">
               <div class="wholesale-inquiry-form__field">
@@ -91,7 +82,7 @@
                 <input
                   type="text"
                   id="mce-COMPANY"
-                  name="COMPANY"
+                  name="{{ section.settings.mailchimp_company_field }}"
                   placeholder="Company name"
                 >
               </div>
@@ -105,7 +96,7 @@
           </form>
         {%- else -%}
           <div class="wholesale-inquiry-form__setup-message">
-            <p><strong>Setup Required:</strong> Please configure your Mailchimp settings in the theme editor to enable this form.</p>
+            <p><strong>Setup Required:</strong> Please configure your Mailchimp form action URL in the theme editor to enable this form.</p>
           </div>
         {%- endif -%}
       </div>
@@ -148,37 +139,31 @@
     {
       "type": "header",
       "content": "Mailchimp Integration",
-      "info": "Configure your Mailchimp settings to enable automated email sending"
+      "info": "Get these values from your Mailchimp embedded form code"
     },
     {
       "type": "text",
-      "id": "mailchimp_user_id",
-      "label": "Mailchimp User ID",
-      "info": "Find this in your Mailchimp form embed code (the 'u' parameter). Example: 1a2b3c4d5e6f7g8h9i0j1k"
+      "id": "mailchimp_form_action",
+      "label": "Mailchimp Form Action URL",
+      "info": "Copy the FULL action URL from your Mailchimp form. Example: https://gmail.us4.list-manage.com/subscribe/post?u=902e40fa7d8547f520667beae&id=70478c28b6&f_id=000d64e2f0"
     },
     {
       "type": "text",
-      "id": "mailchimp_list_id",
-      "label": "Mailchimp List/Audience ID",
-      "info": "Find this in your Mailchimp form embed code (the 'id' parameter). Example: a1b2c3d4e5"
+      "id": "mailchimp_company_field",
+      "label": "Company Field Name",
+      "info": "Find this in your Mailchimp form HTML. Usually MMERGE5 or similar. Check the 'name' attribute of your company field.",
+      "default": "MMERGE5"
     },
     {
       "type": "text",
-      "id": "mailchimp_domain",
-      "label": "Mailchimp Data Center",
-      "info": "Usually something like 'us1', 'us2', 'us21', etc. Find this in your Mailchimp account URL or form code",
-      "default": "us1"
-    },
-    {
-      "type": "checkbox",
-      "id": "add_mailchimp_tag",
-      "label": "Add 'wholesale-inquiry' tag in Mailchimp",
-      "info": "Tags must be enabled in your Mailchimp audience settings",
-      "default": true
+      "id": "mailchimp_honeypot",
+      "label": "Honeypot Field Name",
+      "info": "The bot prevention field name. Usually b_USERID_LISTID. Find it in the hidden div with 'left: -5000px' in your Mailchimp form.",
+      "default": "b_902e40fa7d8547f520667beae_70478c28b6"
     },
     {
       "type": "paragraph",
-      "content": "**How to find your Mailchimp IDs:** Go to Mailchimp → Audience → Signup forms → Embedded forms. Look for the form action URL like: list-manage.com/subscribe/post?u=USER_ID&id=LIST_ID"
+      "content": "**How to get these values:** Go to Mailchimp → Audience → Signup forms → Embedded forms → Copy the form HTML → Paste it in a text editor → Find the 'action' URL and field names"
     },
     {
       "type": "header",

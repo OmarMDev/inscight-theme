@@ -24,12 +24,11 @@
         "subheading": "Please complete the form below to receive our Pair Beautifully™ deck and pricing.",
         "button_text": "Request wholesale deck & pricing",
         "success_message": "Thank you for your inquiry! We'll be in touch soon with our wholesale information.",
-        "mailchimp_user_id": "902e40fa7d8547f520667beae",
-        "mailchimp_list_id": "000d64e2f0",
-        "mailchimp_domain": "us1",
-        "add_mailchimp_tag": true,
+        "mailchimp_form_action": "https://gmail.us4.list-manage.com/subscribe/post?u=902e40fa7d8547f520667beae&id=70478c28b6&f_id=000d64e2f0",
+        "mailchimp_company_field": "MMERGE5",
+        "mailchimp_honeypot": "b_902e40fa7d8547f520667beae_70478c28b6",
         "create_shopify_customer": false,
-        "box_background_color": "#F1E4D6",
+        "box_background_color": "#f1e4d6",
         "padding_top": 80,
         "padding_bottom": 80
       }

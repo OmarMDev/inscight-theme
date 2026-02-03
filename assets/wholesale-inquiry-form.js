@@ -27,8 +27,8 @@ class WholesaleInquiryForm extends HTMLElement {
     // Get form data
     const formData = new FormData(this.form);
     
-    // Submit via iframe to read response
-    this.submitViaIframe(formData)
+    // Submit via JSONP
+    this.submitViaJsonp(formData)
       .then((response) => {
         if (response.result === 'success') {
           // Check if we should also create Shopify customer
@@ -61,51 +61,45 @@ class WholesaleInquiryForm extends HTMLElement {
       });
   }
 
-  submitViaIframe(formData) {
+  submitViaJsonp(formData) {
     return new Promise((resolve, reject) => {
-      // Create hidden iframe
-      const iframe = document.createElement('iframe');
-      iframe.name = 'mailchimp-response-frame';
-      iframe.style.display = 'none';
-      document.body.appendChild(iframe);
+      // Create unique callback name
+      const callbackName = 'mailchimpCallback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+      
+      // Create global callback function
+      window[callbackName] = (data) => {
+        // Clean up
+        delete window[callbackName];
+        if (script.parentNode) {
+          document.body.removeChild(script);
+        }
+        
+        resolve(data);
+      };
       
       // Convert form action to JSON endpoint
       const formAction = this.form.action;
       const jsonUrl = formAction.replace('/subscribe/post', '/subscribe/post-json');
       
-      // Listen for iframe load
-      iframe.onload = () => {
-        try {
-          // Try to read iframe content
-          const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-          const body = iframeDoc.body;
-          const text = body.textContent || body.innerText;
-          
-          // Parse JSON response
-          const response = JSON.parse(text);
-          
-          // Clean up
-          document.body.removeChild(iframe);
-          
-          resolve(response);
-        } catch (e) {
-          console.error('Failed to read or parse iframe response:', e);
-          document.body.removeChild(iframe);
-          reject(new Error('Could not read response from Mailchimp. The submission may have succeeded, but we cannot confirm.'));
-        }
-      };
-      
-      iframe.onerror = () => {
-        document.body.removeChild(iframe);
-        reject(new Error('Failed to load Mailchimp response'));
-      };
-      
-      // Build URL with GET parameters
+      // Build URL with parameters
       const params = new URLSearchParams(formData);
+      params.append('c', callbackName);
+      
       const fullUrl = jsonUrl + (jsonUrl.includes('?') ? '&' : '?') + params.toString();
       
-      // Load URL in iframe
-      iframe.src = fullUrl;
+      // Create script tag
+      const script = document.createElement('script');
+      script.src = fullUrl;
+      
+      script.onerror = () => {
+        delete window[callbackName];
+        if (script.parentNode) {
+          document.body.removeChild(script);
+        }
+        reject(new Error('Failed to connect to Mailchimp'));
+      };
+      
+      document.body.appendChild(script);
     });
   }
 

@@ -5,30 +5,10 @@ class WholesaleInquiryForm extends HTMLElement {
     this.submitButton = this.querySelector('.wholesale-inquiry-form__button');
     this.successMessage = this.querySelector('.wholesale-inquiry-form__success');
     this.errorMessage = this.querySelector('.wholesale-inquiry-form__errors');
-    this.iframe = null;
     
     if (this.form) {
-      this.setupIframeSubmission();
       this.form.addEventListener('submit', this.handleSubmit.bind(this));
     }
-  }
-
-  setupIframeSubmission() {
-    // Create hidden iframe for form submission
-    this.iframe = document.createElement('iframe');
-    this.iframe.name = 'mailchimp-submit-frame';
-    this.iframe.style.display = 'none';
-    document.body.appendChild(this.iframe);
-    
-    // Set form target to iframe
-    this.form.setAttribute('target', 'mailchimp-submit-frame');
-    
-    // Listen for iframe load to detect submission result
-    this.iframe.addEventListener('load', () => {
-      if (this.isSubmitting) {
-        this.handleMailchimpResponse();
-      }
-    });
   }
 
   handleSubmit(event) {
@@ -44,64 +24,93 @@ class WholesaleInquiryForm extends HTMLElement {
     if (this.successMessage) this.successMessage.style.display = 'none';
     if (this.errorMessage) this.errorMessage.style.display = 'none';
     
-    // Mark that we're submitting
-    this.isSubmitting = true;
+    // Get form data
+    const formData = new FormData(this.form);
     
-    // Store form data for potential Shopify customer creation
-    this.formData = new FormData(this.form);
+    // Convert form action to JSONP endpoint
+    const formAction = this.form.action;
+    const jsonpUrl = this.convertToJsonpUrl(formAction, formData);
     
-    // Submit the form (will go to iframe)
-    this.form.submit();
+    // Submit via JSONP
+    this.submitViaJsonp(jsonpUrl, formData)
+      .then((response) => {
+        if (response.result === 'success') {
+          // Check if we should also create Shopify customer
+          const createShopifyCustomer = this.dataset.createShopifyCustomer === 'true';
+          
+          if (createShopifyCustomer) {
+            return this.createShopifyCustomer(formData)
+              .then(() => response)
+              .catch(() => {
+                // Don't fail if Shopify fails, Mailchimp succeeded
+                console.warn('Shopify customer creation failed, but Mailchimp succeeded');
+                return response;
+              });
+          }
+          return response;
+        } else {
+          throw new Error(response.msg || 'Submission failed');
+        }
+      })
+      .then((response) => {
+        this.showSuccess();
+        this.form.reset();
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        this.showError(error.message || 'There was an error submitting your request. Please try again.');
+      })
+      .finally(() => {
+        this.resetButton();
+      });
   }
 
-  handleMailchimpResponse() {
-    this.isSubmitting = false;
+  convertToJsonpUrl(formAction, formData) {
+    // Convert /subscribe/post to /subscribe/post-json
+    let url = formAction.replace('/subscribe/post', '/subscribe/post-json');
     
-    try {
-      // Try to read iframe content to check for success/error
-      const iframeDoc = this.iframe.contentDocument || this.iframe.contentWindow.document;
-      const iframeBody = iframeDoc.body;
-      
-      if (iframeBody) {
-        const bodyText = iframeBody.innerText || iframeBody.textContent || '';
-        
-        // Check for Mailchimp error messages
-        if (bodyText.toLowerCase().includes('already subscribed') ||
-            bodyText.toLowerCase().includes('too many') ||
-            bodyText.toLowerCase().includes('invalid') ||
-            bodyText.toLowerCase().includes('error')) {
-          this.showError('There was an issue with your submission. Please check your information and try again.');
-          this.resetButton();
-          return;
-        }
+    // Add form parameters to URL
+    const params = new URLSearchParams();
+    for (let [key, value] of formData.entries()) {
+      if (value) {
+        params.append(key, value);
       }
-    } catch (e) {
-      // Cross-origin iframe - can't read content, assume success
-      console.log('Cannot read iframe content (cross-origin), assuming success');
     }
     
-    // Check if we should also create Shopify customer
-    const createShopifyCustomer = this.dataset.createShopifyCustomer === 'true';
+    // Add JSONP callback parameter
+    params.append('c', '?');
     
-    if (createShopifyCustomer) {
-      this.createShopifyCustomer(this.formData)
-        .then(() => {
-          this.showSuccess();
-          this.form.reset();
-          this.resetButton();
-        })
-        .catch(() => {
-          // Still show success for Mailchimp, just log Shopify error
-          console.warn('Shopify customer creation failed, but Mailchimp submission succeeded');
-          this.showSuccess();
-          this.form.reset();
-          this.resetButton();
-        });
-    } else {
-      this.showSuccess();
-      this.form.reset();
-      this.resetButton();
-    }
+    return `${url}${url.includes('?') ? '&' : '?'}${params.toString()}`;
+  }
+
+  submitViaJsonp(url, formData) {
+    return new Promise((resolve, reject) => {
+      // Create unique callback name
+      const callbackName = 'mailchimpCallback_' + Date.now();
+      
+      // Create global callback function
+      window[callbackName] = (data) => {
+        // Clean up
+        delete window[callbackName];
+        document.body.removeChild(script);
+        
+        resolve(data);
+      };
+      
+      // Replace the callback placeholder with actual function name
+      url = url.replace('c=?', 'c=' + callbackName);
+      
+      // Create script tag for JSONP
+      const script = document.createElement('script');
+      script.src = url;
+      script.onerror = () => {
+        delete window[callbackName];
+        document.body.removeChild(script);
+        reject(new Error('Network error occurred'));
+      };
+      
+      document.body.appendChild(script);
+    });
   }
 
   resetButton() {
@@ -109,7 +118,7 @@ class WholesaleInquiryForm extends HTMLElement {
     this.submitButton.classList.remove('loading');
     this.submitButton.textContent = this.originalButtonText;
   }
-  
+
   async createShopifyCustomer(formData) {
     // Create a new FormData for Shopify customer form
     const shopifyFormData = new FormData();
@@ -143,7 +152,7 @@ class WholesaleInquiryForm extends HTMLElement {
       this.successMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
     
-    // Hide form fields after success (optional)
+    // Hide form fields after success
     const formWrapper = this.querySelector('.wholesale-inquiry-form__form-wrapper');
     if (formWrapper) {
       formWrapper.querySelector('.wholesale-inquiry-form__fields')?.remove();

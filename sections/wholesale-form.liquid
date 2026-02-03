@@ -34,7 +34,7 @@
         {%- comment -%} Mailchimp form with JSONP submission {%- endcomment -%}
         {%- if section.settings.mailchimp_form_action != blank -%}
           <form
-            action="{{ section.settings.mailchimp_form_action }}"
+            data-mailchimp-action="{{ section.settings.mailchimp_form_action }}"
             method="post"
             class="wholesale-inquiry-form__mailchimp-form"
             novalidate

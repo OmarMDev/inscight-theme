@@ -27,12 +27,13 @@ class WholesaleInquiryForm extends HTMLElement {
     // Get form data
     const formData = new FormData(this.form);
     
-    // Convert form action to JSONP endpoint
+    // Convert form action to JSON endpoint
     const formAction = this.form.action;
-    const jsonpUrl = this.convertToJsonpUrl(formAction, formData);
+    const jsonUrl = formAction.replace('/subscribe/post', '/subscribe/post-json');
     
-    // Submit via JSONP
-    this.submitViaJsonp(jsonpUrl, formData)
+    // Submit via fetch
+    fetch(jsonUrl + '&' + new URLSearchParams(formData).toString())
+      .then(response => response.json())
       .then((response) => {
         if (response.result === 'success') {
           // Check if we should also create Shopify customer
@@ -63,87 +64,6 @@ class WholesaleInquiryForm extends HTMLElement {
       .finally(() => {
         this.resetButton();
       });
-  }
-
-  convertToJsonpUrl(formAction, formData) {
-    // Convert /subscribe/post to /subscribe/post-json
-    let url = formAction.replace('/subscribe/post', '/subscribe/post-json');
-    
-    // Add form parameters to URL
-    const params = new URLSearchParams();
-    for (let [key, value] of formData.entries()) {
-      if (value) {
-        params.append(key, value);
-      }
-    }
-    
-    // Add JSONP callback parameter
-    params.append('c', '?');
-    
-    return `${url}${url.includes('?') ? '&' : '?'}${params.toString()}`;
-  }
-
-  submitViaJsonp(url, formData) {
-    return new Promise((resolve, reject) => {
-      // Create unique callback name
-      const callbackName = 'mailchimpCallback_' + Date.now();
-      
-      let scriptElement;
-      let timeoutId;
-      
-      // Create global callback function
-      window[callbackName] = (data) => {
-        console.log('Mailchimp JSONP response:', data);
-        // Clean up
-        clearTimeout(timeoutId);
-        delete window[callbackName];
-        if (scriptElement && scriptElement.parentNode) {
-          document.body.removeChild(scriptElement);
-        }
-        
-        resolve(data);
-      };
-      
-      // Replace the callback placeholder with actual function name
-      url = url.replace('c=?', 'c=' + callbackName);
-      
-      console.log('JSONP URL:', url);
-      
-      // Create script tag for JSONP
-      scriptElement = document.createElement('script');
-      scriptElement.src = url;
-      
-      // Set a timeout in case callback is never called
-      timeoutId = setTimeout(() => {
-        console.warn('JSONP timeout - callback was never invoked, but request may have succeeded');
-        delete window[callbackName];
-        if (scriptElement && scriptElement.parentNode) {
-          document.body.removeChild(scriptElement);
-        }
-        // Assume success since we got a 200 response
-        resolve({
-          result: 'success',
-          msg: 'Form submitted successfully'
-        });
-      }, 5000);
-      
-      scriptElement.onerror = () => {
-        console.error('Script load error');
-        clearTimeout(timeoutId);
-        delete window[callbackName];
-        if (scriptElement && scriptElement.parentNode) {
-          document.body.removeChild(scriptElement);
-        }
-        // If it's a script error but the request succeeded, treat as success
-        console.warn('Script error occurred, but this may indicate successful submission');
-        resolve({
-          result: 'success',
-          msg: 'Form submitted successfully'
-        });
-      };
-      
-      document.body.appendChild(scriptElement);
-    });
   }
 
   resetButton() {

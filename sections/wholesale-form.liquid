@@ -31,7 +31,7 @@
         {%- comment -%} Error message container (initially hidden, shown by JS if submission fails) {%- endcomment -%}
         <div class="wholesale-inquiry-form__errors" style="display: none;"></div>
 
-        {%- comment -%} Mailchimp form with iframe submission {%- endcomment -%}
+        {%- comment -%} Mailchimp form with JSONP submission {%- endcomment -%}
         {%- if section.settings.mailchimp_form_action != blank -%}
           <form
             action="{{ section.settings.mailchimp_form_action }}"
@@ -39,10 +39,6 @@
             class="wholesale-inquiry-form__mailchimp-form"
             novalidate
           >
-            {%- comment -%} Bot prevention field (honeypot) - Use the exact name from Mailchimp {%- endcomment -%}
-            <div style="position: absolute; left: -5000px;" aria-hidden="true">
-              <input type="text" name="{{ section.settings.mailchimp_honeypot }}" tabindex="-1" value="">
-            </div>
 
             <div class="wholesale-inquiry-form__fields">
               <div class="wholesale-inquiry-form__field">
@@ -153,13 +149,6 @@
       "label": "Company Field Name",
       "info": "Find this in your Mailchimp form HTML. Usually MMERGE5 or similar. Check the 'name' attribute of your company field.",
       "default": "MMERGE5"
-    },
-    {
-      "type": "text",
-      "id": "mailchimp_honeypot",
-      "label": "Honeypot Field Name",
-      "info": "The bot prevention field name. Usually b_USERID_LISTID. Find it in the hidden div with 'left: -5000px' in your Mailchimp form.",
-      "default": "b_902e40fa7d8547f520667beae_70478c28b6"
     },
     {
       "type": "paragraph",
